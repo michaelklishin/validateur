@@ -16,6 +16,13 @@ Validateur is very much a work in progress and right now, there is nothing to
 see here, really.
 
 
+## Continuous Integration
+
+[![Continuous Integration status](https://secure.travis-ci.org/michaelklishin/validateur.png)](http://travis-ci.org/michaelklishin/validateur)
+
+CI is hosted by [travis-ci.org](http://travis-ci.org)
+
+
 ## Supported Clojure versions
 
 Validateur is built from the ground up for Clojure 1.3 and up.
