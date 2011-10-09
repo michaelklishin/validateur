@@ -7,13 +7,17 @@
 ;;
 
 
-;; (deftest presence-validation
-;;   (def v (validation-set
-;;           (presence-of :name)
-;;           (presence-of :age)))
-;;   (is (valid? v { :name "Joe", :age 28 }))
-;;   (is-not (valid? v { :name "Joe" }))
-;;   (is-not (valid? v { :age 30 })))
+(deftest presence-validation-using-set
+  (def v (validation-set
+          (presence-of :name) (presence-of :age)))
+  (is (valid? v { :name "Joe", :age 28 }))
+  (is (not (invalid? v { :name "Joe", :age 28 })))
+  (is (not (valid? v { :name "Joe" })))
+  (is (invalid? v { :name "Joe" }))
+  (is (not (valid? v { :age 30 })))
+  (is (invalid? v { :age 30 }))
+  (is (= {:age #{ "can't be blank" }} (v { :name "Joe" })))
+  (is (= {} (v { :name "Joe", :age 28 }))))
 
 
 

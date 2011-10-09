@@ -90,9 +90,20 @@
 
 
 
-(defmacro validation-set
-  [& clauses]
-  )
+(defn validation-set
+  [& validators]
+  (fn [m]
+    (reduce (fn [accu f]
+              (let [[ok errors] (f m)]
+                (merge-with set/union accu errors)))
+            {}
+            validators)))
+
+(defn valid?
+  [vs m]
+  (empty? (vs m)))
+
+(def invalid? (complement valid?))
 
 
 
@@ -118,5 +129,5 @@
     (vec [arg])))
 
 (defn- concat-with-separator
-  [v, s]
+  [v s]
   (apply str (interpose s v)))
