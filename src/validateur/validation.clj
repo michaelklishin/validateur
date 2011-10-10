@@ -89,6 +89,22 @@
           [false, { attribute #{"has incorrect format"} }])))))
 
 
+(defn- equal-length-of
+  [attribute actual expected-length]
+  (if (= expected-length (count actual))
+    [true, {}]
+    [false, { attribute #{(str "must be " expected-length " characters long")} }]))
+
+(defn length-of
+  [attribute & { :keys [allow-nil is maximum minimum within] :or { allow-nil false }}]
+  (fn [m]
+    (let [v (attribute m)]
+      (if (and (nil? v) (not allow-nil))
+        [false, { attribute #{"can't be blank"} }]
+        (case [(nil? is) (nil? maximum) (nil? minimum) (nil? within)]
+          [false true true true] (equal-length-of attribute v is))))))
+
+
 
 (defn validation-set
   [& validators]

@@ -167,6 +167,21 @@
   (is (= [false, { :genre #{"must not be one of: trance, dnb"} }] (v { :genre "dnb" }))))
 
 
+
+;;
+;; length-of
+;;
+
+(deftest test-length-validator-with-fixed-length
+  (def v (length-of :title :is 11))
+  (is (fn? v))
+  (is (= [false, { :title #{"can't be blank"} }]             (v { :title nil })))
+  (is (= [true, {}]                                          (v { :title "power metal" })))
+  (is (= [false, { :title #{"must be 11 characters long"} }] (v { :title "trance" })))
+  (is (= [false, { :title #{"must be 11 characters long"} }] (v { :title "dnb" })))
+  (is (= [false, { :title #{"must be 11 characters long"} }] (v { :title "melodic power metal" }))))
+
+
 ;;
 ;; format-of
 ;;
