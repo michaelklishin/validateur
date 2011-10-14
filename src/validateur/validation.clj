@@ -95,14 +95,22 @@
     [true, {}]
     [false, { attribute #{(str "must be " expected-length " characters long")} }]))
 
+(declare in?)
+(defn- range-length-of
+  [attribute actual xs]
+  (if (in? xs (count actual))
+    [true, {}]
+    [false, { attribute #{(str "must be from " (first xs) " to " (last xs) " characters long")} }]))
+
 (defn length-of
-  [attribute & { :keys [allow-nil is maximum minimum within] :or { allow-nil false }}]
+  [attribute & { :keys [allow-nil is within] :or { allow-nil false }}]
   (fn [m]
     (let [v (attribute m)]
       (if (and (nil? v) (not allow-nil))
         [false, { attribute #{"can't be blank"} }]
-        (case [(nil? is) (nil? maximum) (nil? minimum) (nil? within)]
-          [false true true true] (equal-length-of attribute v is))))))
+        (if within
+          (range-length-of attribute v within)
+          (equal-length-of attribute v is))))))
 
 
 
@@ -147,3 +155,7 @@
 (defn- concat-with-separator
   [v s]
   (apply str (interpose s v)))
+
+(defn- in?
+  [coll x]
+  (some #(= x %) coll))
