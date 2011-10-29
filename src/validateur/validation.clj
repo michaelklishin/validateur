@@ -136,12 +136,13 @@
 
 
 (defn format-of
-  [attribute & { :keys [allow-nil format] :or { allow-nil false }}]
+  [attribute & { :keys [allow-nil allow-blank format] :or { allow-nil false allow-blank false }}]
   (fn [m]
     (let [v (attribute m)]
-      (if (and (nil? v) (not allow-nil))
+      (if (not-allowed-to-be-blank? v allow-nil allow-blank)
         [false, { attribute #{"can't be blank"} }]
-        (if (re-find format v)
+        (if (or (allowed-to-be-blank? v allow-nil allow-blank)
+                (re-find format v))
           [true, {}]
           [false, { attribute #{"has incorrect format"} }])))))
 

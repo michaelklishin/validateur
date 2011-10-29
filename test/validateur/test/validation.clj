@@ -223,6 +223,14 @@
     (is (= [false, { :id #{"has incorrect format"} }] (v { :id "123-abc" })))))
 
 
+(deftest test-format-of-validator-that-allows-blanks
+  (let [v (format-of :id :format #"abc-\d\d\d" :allow-blank true)]
+    (is (= [false, { :id #{"can't be blank"} }]       (v { :id nil })))
+    (is (= [true, {}]                                 (v { :id "" })))
+    (is (= [true, {}]                                 (v { :id "abc-123" })))
+    (is (= [false, { :id #{"has incorrect format"} }] (v { :id "123-abc" })))))
+
+
 
 ;;
 ;; Implementation functions
