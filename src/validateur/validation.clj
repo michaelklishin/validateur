@@ -2,13 +2,67 @@
   (:use [clojure.set :as set])
   (:require [clojure.string]))
 
+
+;;
+;; Implementation
+;;
+
+(defn assoc-with
+  ([f m k v]
+     (let [ov (k m)
+           nv (apply f [ov v])]
+       (assoc m k nv)))
+  ([f m k v & kvs]
+     (let [ret (assoc-with f m k v)]
+       (if kvs
+         (recur f ret (first kvs) (second kvs) (nnext kvs))
+         ret))))
+
+(defn as-vec
+  [arg]
+  (if (sequential? arg)
+    (vec arg)
+    (vec [arg])))
+
+(defn- concat-with-separator
+  [v s]
+  (apply str (interpose s v)))
+
+(defn- member?
+  [coll x]
+  (some #(= x %) coll))
+
+
+(defn- not-allowed-to-be-blank?
+  [v ^Boolean allow-nil ^Boolean allow-blank]
+  (or (and (nil? v)                  (not allow-nil))
+      (and (clojure.string/blank? v) (not allow-blank))))
+
+(defn- allowed-to-be-blank?
+  [v ^Boolean allow-nil ^Boolean allow-blank]
+  (or (and (nil? v)                  allow-nil)
+      (and (clojure.string/blank? v) allow-blank)))
+
+
+(defn- equal-length-of
+  [attribute actual expected-length allow-nil allow-blank]
+  (if (or (= expected-length (count actual))
+          (allowed-to-be-blank? actual allow-nil allow-blank))
+    [true, {}]
+    [false, { attribute #{(str "must be " expected-length " characters long")} }]))
+
+(defn- range-length-of
+  [attribute actual xs allow-nil allow-blank]
+  (if (or (member? xs (count actual))
+          (allowed-to-be-blank? actual allow-nil allow-blank))
+    [true, {}]
+    [false, { attribute #{(str "must be from " (first xs) " to " (last xs) " characters long")} }]))
+
+
+
 ;;
 ;; API
 ;;
-
-(declare as-vec)
-(declare assoc-with)
-(declare concat-with-separator)
 
 (defn presence-of
   [attribute]
@@ -93,29 +147,11 @@
 
 
 
-
-(defn- equal-length-of
-  [attribute actual expected-length allow-nil allow-blank]
-  (if (or (= expected-length (count actual))
-          (or (and (nil? actual)                  allow-nil)
-              (and (clojure.string/blank? actual) allow-blank)))
-    [true, {}]
-    [false, { attribute #{(str "must be " expected-length " characters long")} }]))
-
-(declare member?)
-(defn- range-length-of
-  [attribute actual xs allow-nil allow-blank]
-  (if (or (member? xs (count actual))
-          (and (clojure.string/blank? actual) allow-blank))
-    [true, {}]
-    [false, { attribute #{(str "must be from " (first xs) " to " (last xs) " characters long")} }]))
-
 (defn length-of
   [attribute & { :keys [allow-nil is within allow-blank] :or { allow-nil false allow-blank false }}]
   (fn [m]
     (let [v (attribute m)]
-      (if (or (and (nil? v)                  (not allow-nil))
-              (and (clojure.string/blank? v) (not allow-blank)))
+      (if (not-allowed-to-be-blank? v allow-nil allow-blank)
         [false, { attribute #{"can't be blank"} }]
         (if within
           (range-length-of attribute v within allow-nil allow-blank)
@@ -138,34 +174,3 @@
   (empty? (vs m)))
 
 (def invalid? (complement valid?))
-
-
-
-;;
-;; Implementation
-;;
-
-(defn assoc-with
-  ([f m k v]
-     (let [ov (k m)
-           nv (apply f [ov v])]
-       (assoc m k nv)))
-  ([f m k v & kvs]
-     (let [ret (assoc-with f m k v)]
-       (if kvs
-         (recur f ret (first kvs) (second kvs) (nnext kvs))
-         ret))))
-
-(defn as-vec
-  [arg]
-  (if (sequential? arg)
-    (vec arg)
-    (vec [arg])))
-
-(defn- concat-with-separator
-  [v s]
-  (apply str (interpose s v)))
-
-(defn- member?
-  [coll x]
-  (some #(= x %) coll))
