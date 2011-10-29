@@ -1,5 +1,6 @@
 (ns validateur.validation
-  (:use [clojure.set :as set]))
+  (:use [clojure.set :as set])
+  (:require [clojure.string]))
 
 ;;
 ;; API
@@ -55,6 +56,7 @@
           [false, { attribute #{"must be accepted"} }])))))
 
 
+
 (defn inclusion-of
   [attribute & { :keys [allow-nil in] :or { allow-nil false }}]
   (fn [m]
@@ -64,6 +66,7 @@
         (if (in v)
           [true, {}]
           [false, { attribute #{(str "must be one of: " (concat-with-separator in ", "))} }])))))
+
 
 
 (defn exclusion-of
@@ -89,28 +92,35 @@
           [false, { attribute #{"has incorrect format"} }])))))
 
 
+
+
 (defn- equal-length-of
-  [attribute actual expected-length]
-  (if (= expected-length (count actual))
+  [attribute actual expected-length allow-nil allow-blank]
+  (if (or (= expected-length (count actual))
+          (or (and (nil? actual)                  allow-nil)
+              (and (clojure.string/blank? actual) allow-blank)))
     [true, {}]
     [false, { attribute #{(str "must be " expected-length " characters long")} }]))
 
-(declare in?)
+(declare member?)
 (defn- range-length-of
-  [attribute actual xs]
-  (if (in? xs (count actual))
+  [attribute actual xs allow-nil allow-blank]
+  (if (or (member? xs (count actual))
+          (and (clojure.string/blank? actual) allow-blank))
     [true, {}]
     [false, { attribute #{(str "must be from " (first xs) " to " (last xs) " characters long")} }]))
 
 (defn length-of
-  [attribute & { :keys [allow-nil is within] :or { allow-nil false }}]
+  [attribute & { :keys [allow-nil is within allow-blank] :or { allow-nil false allow-blank false }}]
   (fn [m]
     (let [v (attribute m)]
-      (if (and (nil? v) (not allow-nil))
+      (if (or (and (nil? v)                  (not allow-nil))
+              (and (clojure.string/blank? v) (not allow-blank)))
         [false, { attribute #{"can't be blank"} }]
         (if within
-          (range-length-of attribute v within)
-          (equal-length-of attribute v is))))))
+          (range-length-of attribute v within allow-nil allow-blank)
+          (equal-length-of attribute v is     allow-nil allow-blank))))))
+
 
 
 
@@ -156,6 +166,6 @@
   [v s]
   (apply str (interpose s v)))
 
-(defn- in?
+(defn- member?
   [coll x]
   (some #(= x %) coll))

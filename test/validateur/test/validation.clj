@@ -181,6 +181,16 @@
     (is (= [false, { :title #{"must be 11 characters long"} }] (v { :title "dnb" })))
     (is (= [false, { :title #{"must be 11 characters long"} }] (v { :title "melodic power metal" })))))
 
+(deftest ^{:focus true} test-length-validator-with-fixed-length-that-allows-blanks
+  (let [v (length-of :title :is 11 :allow-blank true :allow-nil true)]
+    (is (fn? v))
+    (is (= [true, {}] (v { :title nil })))
+    (is (= [true, {}] (v { :title "" })))
+    (is (= [true, {}]                                          (v { :title "power metal" })))
+    (is (= [false, { :title #{"must be 11 characters long"} }] (v { :title "trance" })))
+    (is (= [false, { :title #{"must be 11 characters long"} }] (v { :title "dnb" })))
+    (is (= [false, { :title #{"must be 11 characters long"} }] (v { :title "melodic power metal" })))))
+
 (deftest test-length-validator-with-range-length
   (let [v (length-of :title :within (range 9 13))]
     (is (fn? v))
