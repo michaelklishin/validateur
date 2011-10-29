@@ -200,6 +200,16 @@
     (is (= [false, { :title #{"must be from 9 to 12 characters long"} }] (v { :title "dnb" })))
     (is (= [false, { :title #{"must be from 9 to 12 characters long"} }] (v { :title "melodic power metal" })))))
 
+(deftest test-length-validator-with-range-length-that-allows-blanks
+  (let [v (length-of :title :within (range 9 13) :allow-nil true :allow-blank true)]
+    (is (fn? v))
+    (is (= [true, {}] (v { :title nil })))
+    (is (= [true, {}] (v { :title "" })))
+    (is (= [true, {}]                                          (v { :title "power metal" })))
+    (is (= [false, { :title #{"must be from 9 to 12 characters long"} }] (v { :title "trance" })))
+    (is (= [false, { :title #{"must be from 9 to 12 characters long"} }] (v { :title "dnb" })))
+    (is (= [false, { :title #{"must be from 9 to 12 characters long"} }] (v { :title "melodic power metal" })))))
+
 
 ;;
 ;; format-of
