@@ -1,4 +1,6 @@
 (defproject com.novemberain/validateur "1.1.0-SNAPSHOT"
   :description "Functional validations inspired by Ruby's ActiveModel"
+  :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.3.0"]]
-  :test-selectors   {:focus          (fn [v] (:focus v)) })
+  :profiles { :1.4 { :dependencies [[org.clojure/clojure "1.4.0-beta4"]] } }
+  :test-selectors {:focus (fn [v] (:focus v))})

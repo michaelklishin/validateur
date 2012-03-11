@@ -2,6 +2,8 @@
   (:use [clojure.test]
         [validateur.validation]))
 
+(println (str "Using Clojure version " *clojure-version*))
+
 ;;
 ;; validation-set
 ;;
