@@ -1,5 +1,7 @@
 # Validateur
 
+[![Continuous Integration status](https://secure.travis-ci.org/michaelklishin/validateur.png)](http://travis-ci.org/michaelklishin/validateur)
+
 Validateur is a validation library inspired by Ruby's ActiveModel. Validateur is functional: validators are
 functions, validation sets are higher-order functions, validation results are returned as values.
 
@@ -8,18 +10,30 @@ functions, validation sets are higher-order functions, validation results are re
 
 Validateur is built from the ground up for Clojure 1.3 and up.
 
+## Installation
+
+With Leiningen:
+
+    [com.novemberain/validateur "1.0.0"]
+
+With Maven:
+
+    <dependency>
+      <groupId>com.novemberain</groupId>
+      <artifactId>validateur</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+
 
 ## Usage
 
-We are working on documentation guides for the 1.1.0 release. Our test suite has usage examples for each
-validator.
+We are working on documentation guides for the 1.1.0 release. Our test suite has usage examples
+for each validator.
 
 
-## Continuous Integration
+## Documentation
 
-[![Continuous Integration status](https://secure.travis-ci.org/michaelklishin/validateur.png)](http://travis-ci.org/michaelklishin/validateur)
-
-CI is hosted by [travis-ci.org](http://travis-ci.org)
+We are in the process of working on a documentation site for Validateur.
 
 
 ## Development
