@@ -56,12 +56,11 @@
 
 (defn presence-of
   [attribute]
-  (fn [m]
-    (let [v      (if (vector? attribute)
-                   (get-in m attribute)
-                   (attribute m))
-          errors (if v {} { attribute #{"can't be blank"} })]
-      [(empty? errors) errors])))
+  (let [f (if (vector? attribute) get-in get)]
+    (fn [m]
+      (let [v      (f m attribute)
+            errors (if v {} { attribute #{"can't be blank"} })]
+        [(empty? errors) errors]))))
 
 
 (defn numericality-of
@@ -69,102 +68,98 @@
                                                                                      only-integer false
                                                                                      odd false
                                                                                      event false }}]
-  (fn [m]
-    (let [v       (if (vector? attribute)
-                    (get-in m attribute)
-                    (attribute m))
-          errors  (atom {})]
-      (if (and (nil? v) (not allow-nil))
-        (reset! errors (assoc @errors attribute #{"can't be blank"})))
-      (when (and v (not (number? v)))
-        (reset! errors (assoc-with set/union @errors attribute #{"should be a number"})))
-      (when (and v only-integer (not (integer? v)))
-        (reset! errors (assoc-with set/union @errors attribute #{"should be an integer"})))
-      (when (and v (number? v) odd (not (odd? v)))
-        (reset! errors (assoc-with set/union @errors attribute #{"should be odd"})))
-      (when (and v (number? v) even (not (even? v)))
-        (reset! errors (assoc-with set/union @errors attribute #{"should be even"})))
-      (when (and v (number? v) equal-to (not (= equal-to v)))
-        (reset! errors (assoc-with set/union @errors attribute #{(str "should be equal to " equal-to)})))
-      (when (and v (number? v) gt (not (> v gt)))
-        (reset! errors (assoc-with set/union @errors attribute #{(str "should be greater than " gt)})))
-      (when (and v (number? v) gte (not (>= v gte)))
-        (reset! errors (assoc-with set/union @errors attribute #{(str "should be greater than or equal to " gte)})))
-      (when (and v (number? v) lt (not (< v lt)))
-        (reset! errors (assoc-with set/union @errors attribute #{(str "should be less than " lt)})))
-      (when (and v (number? v) lte (not (<= v lte)))
-        (reset! errors (assoc-with set/union @errors attribute #{(str "should be less than or equal to " lte)})))
-      [(empty? @errors) @errors])))
+  (let [f (if (vector? attribute) get-in get)]
+    (fn [m]
+      (let [v      (f m attribute)
+            errors (atom {})]
+        ;; this code below is old, stupid and disgusting. It will be rewritten soon, please DO NOT use it as
+        ;; example of how Clojure atoms should be used. MK.
+        (if (and (nil? v) (not allow-nil))
+          (reset! errors (assoc @errors attribute #{"can't be blank"})))
+        (when (and v (not (number? v)))
+          (reset! errors (assoc-with set/union @errors attribute #{"should be a number"})))
+        (when (and v only-integer (not (integer? v)))
+          (reset! errors (assoc-with set/union @errors attribute #{"should be an integer"})))
+        (when (and v (number? v) odd (not (odd? v)))
+          (reset! errors (assoc-with set/union @errors attribute #{"should be odd"})))
+        (when (and v (number? v) even (not (even? v)))
+          (reset! errors (assoc-with set/union @errors attribute #{"should be even"})))
+        (when (and v (number? v) equal-to (not (= equal-to v)))
+          (reset! errors (assoc-with set/union @errors attribute #{(str "should be equal to " equal-to)})))
+        (when (and v (number? v) gt (not (> v gt)))
+          (reset! errors (assoc-with set/union @errors attribute #{(str "should be greater than " gt)})))
+        (when (and v (number? v) gte (not (>= v gte)))
+          (reset! errors (assoc-with set/union @errors attribute #{(str "should be greater than or equal to " gte)})))
+        (when (and v (number? v) lt (not (< v lt)))
+          (reset! errors (assoc-with set/union @errors attribute #{(str "should be less than " lt)})))
+        (when (and v (number? v) lte (not (<= v lte)))
+          (reset! errors (assoc-with set/union @errors attribute #{(str "should be less than or equal to " lte)})))
+        [(empty? @errors) @errors]))))
 
 
 (defn acceptance-of
   [attribute & { :keys [allow-nil accept] :or { allow-nil false accept #{true "true", "1"} }}]
-  (fn [m]
-    (let [v (if (vector? attribute)
-              (get-in m attribute)
-              (get m attribute))]
-      (if (and (nil? v) (not allow-nil))
-        [false { attribute #{"can't be blank"} }]
-        (if (accept v)
-          [true {}]
-          [false { attribute #{"must be accepted"} }])))))
+  (let [f (if (vector? attribute) get-in get)]
+    (fn [m]
+      (let [v (f m attribute)]
+        (if (and (nil? v) (not allow-nil))
+          [false { attribute #{"can't be blank"} }]
+          (if (accept v)
+            [true {}]
+            [false { attribute #{"must be accepted"} }]))))))
 
 
 
 (defn inclusion-of
   [attribute & { :keys [allow-nil in] :or { allow-nil false }}]
-  (fn [m]
-    (let [v (if (vector? attribute)
-              (get-in m attribute)
-              (get m attribute))]
-      (if (and (nil? v) (not allow-nil))
-        [false { attribute #{"can't be blank"} }]
-        (if (in v)
-          [true {}]
-          [false { attribute #{(str "must be one of: " (concat-with-separator in ", "))} }])))))
+  (let [f (if (vector? attribute) get-in get)]
+    (fn [m]
+      (let [v (f m attribute)]
+        (if (and (nil? v) (not allow-nil))
+          [false { attribute #{"can't be blank"} }]
+          (if (in v)
+            [true {}]
+            [false { attribute #{(str "must be one of: " (concat-with-separator in ", "))} }]))))))
 
 
 
 (defn exclusion-of
   [attribute & { :keys [allow-nil in] :or { allow-nil false }}]
-  (fn [m]
-    (let [v (if (vector? attribute)
-              (get-in m attribute)
-              (get m attribute))]
-      (if (and (nil? v) (not allow-nil))
-        [false { attribute #{"can't be blank"} }]
-        (if-not (in v)
-          [true {}]
-          [false { attribute #{(str "must not be one of: " (concat-with-separator in ", "))} }])))))
+  (let [f (if (vector? attribute) get-in get)]
+    (fn [m]
+      (let [v (f m attribute)]
+        (if (and (nil? v) (not allow-nil))
+          [false { attribute #{"can't be blank"} }]
+          (if-not (in v)
+            [true {}]
+            [false { attribute #{(str "must not be one of: " (concat-with-separator in ", "))} }]))))))
 
 
 
 (defn format-of
   [attribute & { :keys [allow-nil allow-blank format] :or { allow-nil false allow-blank false }}]
-  (fn [m]
-    (let [v (if (vector? attribute)
-              (get-in m attribute)
-              (get m attribute))]
-      (if (not-allowed-to-be-blank? v allow-nil allow-blank)
-        [false { attribute #{"can't be blank"} }]
-        (if (or (allowed-to-be-blank? v allow-nil allow-blank)
-                (re-find format v))
-          [true {}]
-          [false { attribute #{"has incorrect format"} }])))))
+  (let [f (if (vector? attribute) get-in get)]
+    (fn [m]
+      (let [v (f m attribute)]
+        (if (not-allowed-to-be-blank? v allow-nil allow-blank)
+          [false { attribute #{"can't be blank"} }]
+          (if (or (allowed-to-be-blank? v allow-nil allow-blank)
+                  (re-find format v))
+            [true {}]
+            [false { attribute #{"has incorrect format"} }]))))))
 
 
 
 (defn length-of
   [attribute & { :keys [allow-nil is within allow-blank] :or { allow-nil false allow-blank false }}]
-  (fn [m]
-    (let [v (if (vector? attribute)
-              (get-in m attribute)
-              (get m attribute))]
-      (if (not-allowed-to-be-blank? v allow-nil allow-blank)
-        [false { attribute #{"can't be blank"} }]
-        (if within
-          (range-length-of attribute v within allow-nil allow-blank)
-          (equal-length-of attribute v is     allow-nil allow-blank))))))
+  (let [f (if (vector? attribute) get-in get)]
+    (fn [m]
+      (let [v (f m attribute)]
+        (if (not-allowed-to-be-blank? v allow-nil allow-blank)
+          [false { attribute #{"can't be blank"} }]
+          (if within
+            (range-length-of attribute v within allow-nil allow-blank)
+            (equal-length-of attribute v is     allow-nil allow-blank)))))))
 
 
 
