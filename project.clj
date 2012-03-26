@@ -1,4 +1,4 @@
-(defproject com.novemberain/validateur "1.1.0-SNAPSHOT"
+(defproject com.novemberain/validateur "1.1.0-beta1"
   :description "Functional validations inspired by Ruby's ActiveModel"
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure  "1.3.0"]
