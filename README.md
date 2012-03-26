@@ -10,7 +10,9 @@ functions, validation sets are higher-order functions, validation results are re
 
 Validateur is built from the ground up for Clojure 1.3 and up.
 
-## Installation
+## Maven Artifacts
+
+### The Latest Release
 
 With Leiningen:
 
@@ -23,6 +25,24 @@ With Maven:
       <artifactId>validateur</artifactId>
       <version>1.0.0</version>
     </dependency>
+
+
+### The Latest Preview Release
+
+With Leiningen:
+
+```clojure
+[com.novemberain/validateur "1.1.0-beta1"]
+```
+
+With Maven:
+
+    <dependency>
+      <groupId>com.novemberain</groupId>
+      <artifactId>validateur</artifactId>
+      <version>1.1.0-beta1</version>
+    </dependency>
+
 
 
 ## Usage
