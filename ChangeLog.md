@@ -1,4 +1,9 @@
-## Changes between Validateur 1.0.0 and 1.1.0-beta1
+## Changes between Validateur 1.1.0 and 1.2.0
+
+No changes yet.
+
+
+## Changes between Validateur 1.0.0 and 1.1.0
 
 ### Nested attributes support
 
