@@ -69,7 +69,7 @@
   [attribute & {:keys [allow-nil only-integer gt gte lt lte equal-to odd even] :or {allow-nil false
                                                                                      only-integer false
                                                                                      odd false
-                                                                                     event false}}]
+                                                                                     even false}}]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
       (let [v      (f m attribute)
