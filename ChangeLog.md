@@ -1,6 +1,8 @@
-## Changes between Validateur 1.1.0 and 1.2.0
+## Changes between Validateur 1.1.0 and 1.2.0-alpha1
 
-No changes yet.
+### clojurewerkz.support 0.4.0
+
+[ClojureWerkz Support](https://github.com/clojurewerkz/support) upgraded to `v0.4.0`.
 
 
 ## Changes between Validateur 1.0.0 and 1.1.0
