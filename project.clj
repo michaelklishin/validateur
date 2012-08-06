@@ -12,4 +12,5 @@
                  "sonatype-snapshots" {:url "http://oss.sonatype.org/content/repositories/snapshots"
                                        :snapshots true
                                        :releases {:checksum :fail :update :always}}}
+  :source-paths   ["src/clojure"]
   :test-selectors {:focus :focus})
