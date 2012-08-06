@@ -1,7 +1,10 @@
-(ns validateur.validation
+(ns ^{:doc "Validateur is a validation library inspired by Ruby's ActiveModel.
+Validateur is functional: validators are functions, validation sets are higher-order
+functions, validation results are returned as values."}
+  validateur.validation
+  (:require clojure.string)
   (:use [clojure.set :as cs]
-        [clojurewerkz.support.core :only [assoc-with]])
-  (:require clojure.string))
+        [clojurewerkz.support.core :only [assoc-with]]))
 
 
 ;;
@@ -13,10 +16,6 @@
   (if (sequential? arg)
     (vec arg)
     (vec [arg])))
-
-(defn- concat-with-separator
-  [v s]
-  (apply str (interpose s v)))
 
 (defn- member?
   [coll x]
@@ -55,6 +54,15 @@
 ;;
 
 (defn presence-of
+  "Returns a function that, when given a map, will validate presence of the attribute in that map.
+
+   Used in conjunction with validation-set:
+
+   (use 'validateur.validations)
+
+   (validation-set
+     (presence-of :name)
+     (presence-of :age))"
   [attribute]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
@@ -66,6 +74,28 @@
   assoc-with-union (partial assoc-with cs/union))
 
 (defn numericality-of
+  "Returns a function that, when given a map, will validate that the value of the attribute in that map is numerical.
+
+   Accepted options:
+
+   :allow-nil (default: false): should nil values be allowed?
+   :only-integer (default: false): should only integer values be allowed?
+   :even (default: false): should even values be allowed?
+   :odd (default: false): should odd values be allowed?
+   :equal-to: accept only values equal to the given
+   :gt: accept only values greater than the given
+   :gte: accept only values greater than or equal to the given
+   :lt: accept only values less than the given
+   :lte: accept only values less than or equal to the given
+
+   Used in conjunction with validation-set:
+
+   (use 'validateur.validations)
+
+   (validation-set
+     (presence-of :name)
+     (presence-of :age)
+     (numericality-of :age :only-integer true :gte 18))"
   [attribute & {:keys [allow-nil only-integer gt gte lt lte equal-to odd even] :or {allow-nil false
                                                                                      only-integer false
                                                                                      odd false
@@ -121,7 +151,7 @@
           [false {attribute #{"can't be blank"}}]
           (if (in v)
             [true {}]
-            [false {attribute #{(str "must be one of: " (concat-with-separator in ", "))}}]))))))
+            [false {attribute #{(str "must be one of: " (clojure.string/join ", " in))}}]))))))
 
 
 
@@ -134,7 +164,7 @@
           [false {attribute #{"can't be blank"}}]
           (if-not (in v)
             [true {}]
-            [false {attribute #{(str "must not be one of: " (concat-with-separator in ", "))}}]))))))
+            [false {attribute #{(str "must not be one of: " (clojure.string/join ", " in))}}]))))))
 
 
 
