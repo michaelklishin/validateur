@@ -130,6 +130,23 @@ functions, validation results are returned as values."}
 
 
 (defn acceptance-of
+  "Returns a function that, when given a map, will validate that the value of the attribute in that map is accepted.
+   By default, values that are considered accepted: true, \"true\", \"1\". Primarily used for validation of data that comes from
+   Web forms.
+
+   Accepted options:
+
+   :allow-nil (default: false): should nil values be allowed?
+   :accept (default: #{true, \"true\", \"1\"}): pass to use a custom list of values that will be considered accepted
+
+   Used in conjunction with validation-set:
+
+   (use 'validateur.validations)
+
+   (validation-set
+     (presence-of :name)
+     (presence-of :age)
+     (acceptance-of :terms))"
   [attribute & {:keys [allow-nil accept] :or {allow-nil false accept #{true "true", "1"}}}]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
@@ -143,6 +160,21 @@ functions, validation results are returned as values."}
 
 
 (defn inclusion-of
+  "Returns a function that, when given a map, will validate that the value of the attribute in that map is one of the given.
+
+   Accepted options:
+
+   :allow-nil (default: false): should nil values be allowed?
+   :in (default: nil): a collection of valid values for the attribute
+
+   Used in conjunction with validation-set:
+
+   (use 'validateur.validations)
+
+   (validation-set
+     (presence-of :name)
+     (presence-of :age)
+     (inclusion-of :team :in #{\"red\" \"blue\"}))"
   [attribute & {:keys [allow-nil in] :or {allow-nil false}}]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
@@ -156,6 +188,21 @@ functions, validation results are returned as values."}
 
 
 (defn exclusion-of
+  "Returns a function that, when given a map, will validate that the value of the attribute in that map is not one of the given.
+
+   Accepted options:
+
+   :allow-nil (default: false): should nil values be allowed?
+   :in (default: nil): a collection of invalid values for the attribute
+
+   Used in conjunction with validation-set:
+
+   (use 'validateur.validations)
+
+   (validation-set
+     (presence-of :name)
+     (presence-of :age)
+     (exclusion-of :status :in #{\"banned\" \"non-activated\"}))"
   [attribute & {:keys [allow-nil in] :or {allow-nil false}}]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
