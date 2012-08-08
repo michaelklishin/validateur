@@ -216,6 +216,22 @@ functions, validation results are returned as values."}
 
 
 (defn format-of
+  "Returns a function that, when given a map, will validate that the value of the attribute in that map is in the given format.
+
+   Accepted options:
+
+   :allow-nil (default: false): should nil values be allowed?
+   :allow-blank (default: false): should blank string values be allowed?
+   :format (default: nil): a regular expression of the format
+
+   Used in conjunction with validation-set:
+
+   (use 'validateur.validations)
+
+   (validation-set
+     (presence-of :username)
+     (presence-of :age)
+     (format-of :username :format #\"[a-zA-Z0-9_]\")"
   [attribute & {:keys [allow-nil allow-blank format] :or {allow-nil false allow-blank false}}]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
@@ -230,6 +246,28 @@ functions, validation results are returned as values."}
 
 
 (defn length-of
+  "Returns a function that, when given a map, will validate that the value of the attribute in that map is of the given length.
+
+   Accepted options:
+
+   :allow-nil (default: false): should nil values be allowed?
+   :allow-blank (default: false): should blank string values be allowed?
+   :is (default: nil): an exact length, as long
+   :within (default: nil): a range of lengths
+
+   Used in conjunction with validation-set:
+
+   (use 'validateur.validations)
+
+   (validation-set
+     (presence-of :name)
+     (presence-of :age)
+     (length-of :password :within (range 6 100))
+
+   (validation-set
+     (presence-of :name)
+     (presence-of :age)
+     (length-of :zip :is 5)"
   [attribute & {:keys [allow-nil is within allow-blank] :or {allow-nil false allow-blank false}}]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
@@ -244,6 +282,18 @@ functions, validation results are returned as values."}
 
 
 (defn validation-set
+  "Takes a collection of validators and returns a function that, when given a map, will run all
+   the validators against that map and collect all the error messages that are then returned
+   as a set.
+
+   Example:
+
+   (use 'validateur.validations)
+
+   (validation-set
+     (presence-of :name)
+     (presence-of :age)
+     (length-of :password :within (range 6 100))"
   [& validators]
   (fn [m]
     (reduce (fn [accu f]
@@ -253,6 +303,9 @@ functions, validation results are returned as values."}
             validators)))
 
 (defn valid?
+  "Takes a validation set and a map.
+
+   Returns true if validation returned no errors, false otherwise"
   [vs m]
   (empty? (vs m)))
 
