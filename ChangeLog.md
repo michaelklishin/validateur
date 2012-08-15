@@ -1,8 +1,12 @@
-## Changes between Validateur 1.1.0 and 1.2.0-alpha1
+## Changes between Validateur 1.1.0 and 1.2.0
 
-### clojurewerkz.support 0.4.0
+### Doc strings
 
-[ClojureWerkz Support](https://github.com/clojurewerkz/support) upgraded to `v0.4.0`.
+Built-in validation functions now have doc strings.
+
+### clojurewerkz.support 0.6.0
+
+[ClojureWerkz Support](https://github.com/clojurewerkz/support) upgraded to `v0.6.0`.
 
 
 ## Changes between Validateur 1.0.0 and 1.1.0
