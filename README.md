@@ -74,7 +74,7 @@ to indicate validation failure and return error messages can be used as a valida
 
 
 We are working on documentation guides for Validateur as well as other [ClojureWerkz projects](http://clojurewerkz.org).
-Our test suite has usage examples for each validator.
+Our test suite has usage examples for each validator, built-in validation functions have docstrings.
 
 
 
