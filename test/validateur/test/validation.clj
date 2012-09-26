@@ -255,6 +255,10 @@
     (is (= [true {}]                                 (v { :id "abc-123" })))
     (is (= [false { :id #{"has incorrect format"} }] (v { :id "123-abc" })))))
 
+(deftest test-format-of-validator-with-custom-message
+  (let [v (format-of :id :format #"abc-\d\d\d" :message "is improperly formatted")]
+    (is (= [false { :id #{"is improperly formatted"} }] (v { :id "123-abc" })))))
+
 
 
 ;;

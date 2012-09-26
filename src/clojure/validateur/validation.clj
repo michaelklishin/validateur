@@ -223,6 +223,7 @@ functions, validation results are returned as values."}
    :allow-nil (default: false): should nil values be allowed?
    :allow-blank (default: false): should blank string values be allowed?
    :format (default: nil): a regular expression of the format
+   :message (default: \"has incorrect format\"): an error message for invalid values
 
    Used in conjunction with validation-set:
 
@@ -232,7 +233,8 @@ functions, validation results are returned as values."}
      (presence-of :username)
      (presence-of :age)
      (format-of :username :format #\"[a-zA-Z0-9_]\")"
-  [attribute & {:keys [allow-nil allow-blank format] :or {allow-nil false allow-blank false}}]
+  [attribute & {:keys [allow-nil allow-blank format message]
+                :or {allow-nil false allow-blank false message "has incorrect format"}}]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
       (let [v (f m attribute)]
@@ -241,7 +243,7 @@ functions, validation results are returned as values."}
           (if (or (allowed-to-be-blank? v allow-nil allow-blank)
                   (re-find format v))
             [true {}]
-            [false {attribute #{"has incorrect format"}}]))))))
+            [false {attribute #{message}}]))))))
 
 
 
