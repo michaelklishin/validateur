@@ -58,7 +58,7 @@ functions, validation results are returned as values."}
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validations)
+   (use 'validateur.validation)
 
    (validation-set
      (presence-of :name)
@@ -90,7 +90,7 @@ functions, validation results are returned as values."}
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validations)
+   (use 'validateur.validation)
 
    (validation-set
      (presence-of :name)
@@ -141,7 +141,7 @@ functions, validation results are returned as values."}
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validations)
+   (use 'validateur.validation)
 
    (validation-set
      (presence-of :name)
@@ -169,7 +169,7 @@ functions, validation results are returned as values."}
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validations)
+   (use 'validateur.validation)
 
    (validation-set
      (presence-of :name)
@@ -197,7 +197,7 @@ functions, validation results are returned as values."}
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validations)
+   (use 'validateur.validation)
 
    (validation-set
      (presence-of :name)
@@ -226,7 +226,7 @@ functions, validation results are returned as values."}
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validations)
+   (use 'validateur.validation)
 
    (validation-set
      (presence-of :username)
@@ -257,7 +257,7 @@ functions, validation results are returned as values."}
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validations)
+   (use 'validateur.validation)
 
    (validation-set
      (presence-of :name)
@@ -288,7 +288,7 @@ functions, validation results are returned as values."}
 
    Example:
 
-   (use 'validateur.validations)
+   (use 'validateur.validation)
 
    (validation-set
      (presence-of :name)
