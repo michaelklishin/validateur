@@ -4,7 +4,10 @@
   :dependencies [[org.clojure/clojure  "1.3.0"]
                  [clojurewerkz/support "0.6.0"]]
   :profiles {:1.4 { :dependencies [[org.clojure/clojure "1.4.0"]]}
-             :1.5 { :dependencies [[org.clojure/clojure "1.5.0-master-SNAPSHOT"]]}}
+             :1.5 { :dependencies [[org.clojure/clojure "1.5.0-master-SNAPSHOT"]]}
+             :dev {:plugins [[codox "0.6.1"]]
+                   :codox {:sources ["src/clojure"]
+                           :output-dir "doc/api"}}}
   :aliases  {"all" ["with-profile" "dev:dev,1.4:dev,1.5"]}
   :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
@@ -13,4 +16,5 @@
                                        :snapshots true
                                        :releases {:checksum :fail :update :always}}}
   :source-paths   ["src/clojure"]
-  :test-selectors {:focus :focus})
+  :test-selectors {:focus :focus}
+  :codox {:only [validateur.validation]})
