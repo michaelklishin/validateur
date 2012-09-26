@@ -59,7 +59,7 @@ to indicate successful validation or
 ```
 
 to indicate validation failure and return error messages can be used as a validator. Validation sets are then passed to
-`validateur.core/valid?` together with a map to validate:
+`validateur.validation/valid?` together with a map to validate:
 
 ``` clojure
 (let [v (validation-set
@@ -70,7 +70,7 @@ to indicate validation failure and return error messages can be used as a valida
     (is (not (valid? v {:name "Joe"}))))
 ```
 
-`validateur.core/invalid?` is a complement to `validateur.core/valid?`.
+`validateur.validation/invalid?` is a complement to `validateur.validation/valid?`.
 
 
 We are working on documentation guides for Validateur as well as other [ClojureWerkz projects](http://clojurewerkz.org).
