@@ -2,7 +2,7 @@
 
 [![Continuous Integration status](https://secure.travis-ci.org/michaelklishin/validateur.png)](http://travis-ci.org/michaelklishin/validateur)
 
-Validateur is a validation library inspired by Ruby's ActiveModel. Validateur is functional: validators are
+Validateur is a [Clojure validation library](http://clojurevalidations.info) inspired by Ruby's ActiveModel. Validateur is functional: validators are
 functions, validation sets are higher-order functions, validation results are returned as values.
 
 
@@ -32,48 +32,8 @@ With Maven:
 
 ## Documentation & Examples
 
-### Basic Example
+Please refer to the [documentation guides](http://clojurevalidations.info) for Validateur.
 
-With Validateur you define validation sets that compose one or more validators:
-
-``` clojure
-(ns my.app
-  (:use validateur.validation))
-
-(validation-set
-  (presence-of :email)
-  (presence-of [:address :street])
-  (presence-of [:card :cvc]))
-```
-
-Any function that returns either a pair of
-
-``` clojure
-[true #{}]
-```
-
-to indicate successful validation or
-
-``` clojure
-[false set-of-validation-error-messages]
-```
-
-to indicate validation failure and return error messages can be used as a validator. Validation sets are then passed to
-`validateur.validation/valid?` together with a map to validate:
-
-``` clojure
-(let [v (validation-set
-           (presence-of :name)
-           (presence-of :age))]
-    (is (valid? v {:name "Joe" :age 28}))
-    (is (not (invalid? v {:name "Joe" :age 28})))
-    (is (not (valid? v {:name "Joe"}))))
-```
-
-`validateur.validation/invalid?` is a complement to `validateur.validation/valid?`.
-
-
-We are working on documentation guides for Validateur as well as other [ClojureWerkz projects](http://clojurewerkz.org).
 Our test suite has usage examples for each validator, built-in validation functions have docstrings.
 
 
