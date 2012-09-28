@@ -39,6 +39,9 @@
     (is (= [true {}]                                          (v { :address { :street "Old Rd" } })))
     (is (= [false { [:address :street] #{"can't be blank"} }] (v { :address {} })))))
 
+(deftest test-presence-of-validator-with-custom-message
+  (let [v (presence-of :name :message "Низя, должно быть заполнено!")]
+    (is (= [false { :name #{"Низя, должно быть заполнено!"} }] (v { :age 28 })))))
 
 
 ;;

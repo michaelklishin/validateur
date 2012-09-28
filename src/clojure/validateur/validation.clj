@@ -63,11 +63,11 @@ functions, validation results are returned as values."}
    (validation-set
      (presence-of :name)
      (presence-of :age))"
-  [attribute]
+  [attribute & {:keys [message] :or {message "can't be blank"}}]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
       (let [v      (f m attribute)
-            errors (if v {} {attribute #{"can't be blank"}})]
+            errors (if v {} {attribute #{message}})]
         [(empty? errors) errors]))))
 
 (def ^{:private true}
