@@ -1,4 +1,4 @@
-(ns validateur.test.validation
+(ns validateur.test.validation-test
   (:use [clojure.test]
         [validateur.validation]))
 
