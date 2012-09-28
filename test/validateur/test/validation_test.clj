@@ -143,6 +143,12 @@
     (is (= [true {}]                                               (v { :terms-and-conditions true })))
     (is (= [false { :terms-and-conditions #{"must be accepted"} }] (v { :terms-and-conditions "I do not approve it" })))))
 
+(deftest test-acceptance-validator-with-custom-message
+  (let [v (acceptance-of :terms-and-conditions :message "ZOMG")]
+    (is (fn? v))
+    (is (= [true {}]                                               (v { :terms-and-conditions true })))
+    (is (= [false { :terms-and-conditions #{"ZOMG"} }] (v { :terms-and-conditions "I do not approve it" })))))
+
 
 (deftest test-acceptance-validator-with-one-attribute-and-custom-accepted-values-list
   (let [v (acceptance-of :terms-and-conditions :accept #{"yes", "hell yes"})]

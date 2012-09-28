@@ -147,7 +147,7 @@ functions, validation results are returned as values."}
      (presence-of :name)
      (presence-of :age)
      (acceptance-of :terms))"
-  [attribute & {:keys [allow-nil accept] :or {allow-nil false accept #{true "true", "1"}}}]
+  [attribute & {:keys [allow-nil accept message] :or {allow-nil false accept #{true "true" "1"} message "must be accepted"}}]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
       (let [v (f m attribute)]
@@ -155,7 +155,7 @@ functions, validation results are returned as values."}
           [false {attribute #{"can't be blank"}}]
           (if (accept v)
             [true {}]
-            [false {attribute #{"must be accepted"}}]))))))
+            [false {attribute #{message}}]))))))
 
 
 
