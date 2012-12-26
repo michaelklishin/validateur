@@ -66,8 +66,11 @@ functions, validation results are returned as values."}
   [attribute & {:keys [message] :or {message "can't be blank"}}]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
-      (let [v      (f m attribute)
-            errors (if v {} {attribute #{message}})]
+      (let [value  (f m attribute)
+            res    (and (not (nil? value))
+                        (if (string? value)
+                          (not (empty? (clojure.string/trim value))) true))
+            errors (if res {} {attribute #{message}})]
         [(empty? errors) errors]))))
 
 (def ^{:private true}
