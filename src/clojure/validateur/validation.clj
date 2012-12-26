@@ -105,31 +105,28 @@ functions, validation results are returned as values."}
                                                                                      even false}}]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
-      (let [v      (f m attribute)
-            errors (atom {})]
-        ;; this code below is old, stupid and disgusting. It will be rewritten soon, please DO NOT use it as
-        ;; example of how Clojure atoms should be used. MK.
-        (if (and (nil? v) (not allow-nil))
-          (swap! errors assoc attribute #{"can't be blank"}))
-        (when (and v (not (number? v)))
-          (swap! errors assoc-with-union attribute #{"should be a number"}))
-        (when (and v only-integer (not (integer? v)))
-          (swap! errors assoc-with-union attribute #{"should be an integer"}))
-        (when (and v (number? v) odd (not (odd? v)))
-          (swap! errors assoc-with-union attribute #{"should be odd"}))
-        (when (and v (number? v) even (not (even? v)))
-          (swap! errors assoc-with-union attribute #{"should be even"}))
-        (when (and v (number? v) equal-to (not (= equal-to v)))
-          (swap! errors assoc-with-union attribute #{(str "should be equal to " equal-to)}))
-        (when (and v (number? v) gt (not (> v gt)))
-          (swap! errors assoc-with-union attribute #{(str "should be greater than " gt)}))
-        (when (and v (number? v) gte (not (>= v gte)))
-          (swap! errors assoc-with-union attribute #{(str "should be greater than or equal to " gte)}))
-        (when (and v (number? v) lt (not (< v lt)))
-          (swap! errors assoc-with-union attribute #{(str "should be less than " lt)}))
-        (when (and v (number? v) lte (not (<= v lte)))
-          (swap! errors assoc-with-union attribute #{(str "should be less than or equal to " lte)}))
-        [(empty? @errors) @errors]))))
+      (let [v (f m attribute)
+            ;; this is an attempt to improve the validation code, leaving the ugliness warning
+            ;; here until MK approves. OP
+            e (reduce
+               (fn [errors [validation message]]
+                 (println errors validation message attribute)
+                 (if (validation)
+                   (assoc-with-union errors attribute message)
+                   errors))
+               {}
+               { #(and (nil? v) (not allow-nil))                    #{"can't be blank"}
+                 #(and v (not (number? v)))                         #{"should be a number"}
+                 #(and v only-integer (not (integer? v)))           #{"should be an integer"}
+                 #(and v (number? v) odd (not (odd? v)))            #{"should be odd"}
+                 #(and v (number? v) even (not (even? v)))          #{"should be even"}
+                 #(and v (number? v) equal-to (not (= equal-to v))) #{(str "should be equal to " equal-to)}
+                 #(and v (number? v) gt (not (> v gt)))             #{(str "should be greater than " gt)}
+                 #(and v (number? v) gte (not (>= v gte)))          #{(str "should be greater than or equal to " gte)}
+                 #(and v (number? v) lt (not (< v lt)))             #{(str "should be less than " lt)}
+                 #(and v (number? v) lte (not (<= v lte)))          #{(str "should be less than or equal to " lte)}
+                 })]
+        [(empty? e) e]))))
 
 
 (defn acceptance-of
