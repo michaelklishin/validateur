@@ -1,15 +1,22 @@
+## Changes between Validateur 1.3.0 and 1.4.0
+
+No changes yet.
+
+
 ## Changes between Validateur 1.2.0 and 1.3.0
 
-### clojurewerkz.support 0.7.0
+### clojurewerkz.support 0.14.0
 
-[ClojureWerkz Support](https://github.com/clojurewerkz/support) upgraded to `v0.7.0`.
+[ClojureWerkz Support](https://github.com/clojurewerkz/support) upgraded to `v0.14.0`.
 
-### Clojure 1.4
+### Clojure 1.5
 
-Validateur now depends on `org.clojure/clojure` version `1.4.0`. It is still compatible with Clojure 1.3 and if your `project.clj` depends
-on 1.3, it will be used, but 1.4 is the default now.
+Validateur now depends on `org.clojure/clojure` version `1.5.0`. It is
+still compatible with Clojure 1.3 and if your `project.clj` depends on
+a different version, it will be used, but 1.5 is the default now.
 
-We encourage all users to upgrade to 1.4, it is a drop-in replacement for the majority of projects out there.
+We encourage all users to upgrade to 1.5, it is a drop-in replacement
+for the majority of projects out there.
 
 
 ## Changes between Validateur 1.1.0 and 1.2.0
