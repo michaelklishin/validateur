@@ -7,3 +7,4 @@ pom.xml
 TAGS
 doc/*
 deploy.docs.sh
+target/*
