@@ -1,5 +1,7 @@
 (defproject com.novemberain/validateur "1.5.0-SNAPSHOT"
   :description "Functional validations inspired by Ruby's ActiveModel"
+  :license { :name "Eclipse Public License" }
+  :url "http://clojurevalidations.info"
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure  "1.5.1"]
                  [clojurewerkz/support "0.14.0"]]
