@@ -18,14 +18,14 @@ Validateur is built from the ground up for Clojure 1.3 and up.
 
 With Leiningen:
 
-    [com.novemberain/validateur "1.3.0"]
+    [com.novemberain/validateur "1.4.0"]
 
 With Maven:
 
     <dependency>
       <groupId>com.novemberain</groupId>
       <artifactId>validateur</artifactId>
-      <version>1.3.0</version>
+      <version>1.4.0</version>
     </dependency>
 
 
