@@ -1,6 +1,4 @@
-# Validateur
-
-[![Continuous Integration status](https://secure.travis-ci.org/michaelklishin/validateur.png)](http://travis-ci.org/michaelklishin/validateur)
+# Validateur, a Clojure Validation Library
 
 Validateur is a [Clojure validation library](http://clojurevalidations.info) inspired by Ruby's ActiveModel. Validateur is functional: validators are
 functions, validation sets are higher-order functions, validation results are returned as values.
@@ -36,6 +34,10 @@ Please refer to the [documentation guides](http://clojurevalidations.info) for V
 
 Our test suite has usage examples for each validator, built-in validation functions have docstrings.
 
+
+## Continuous Integration
+
+[![Continuous Integration status](https://secure.travis-ci.org/michaelklishin/validateur.png)](http://travis-ci.org/michaelklishin/validateur)
 
 
 ## Development
