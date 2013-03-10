@@ -1,7 +1,7 @@
 (defproject com.novemberain/validateur "1.4.0-SNAPSHOT"
   :description "Functional validations inspired by Ruby's ActiveModel"
   :min-lein-version "2.0.0"
-  :dependencies [[org.clojure/clojure  "1.5.0"]
+  :dependencies [[org.clojure/clojure  "1.5.1"]
                  [clojurewerkz/support "0.14.0"]]
   :profiles {:1.3 {:dependencies [[org.clojure/clojure "1.3.0"]]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
