@@ -34,18 +34,18 @@ functions, validation results are returned as values."}
 
 
 (defn- equal-length-of
-  [attribute actual expected-length allow-nil allow-blank message-fn]
+  [m attribute actual expected-length allow-nil allow-blank message-fn]
   (if (or (= expected-length (count actual))
           (allowed-to-be-blank? actual allow-nil allow-blank))
     [true {}]
-    [false {attribute #{(message-fn :length:is attribute actual expected-length)}}]))
+    [false {attribute #{(message-fn :length:is m attribute expected-length)}}]))
 
 (defn- range-length-of
-  [attribute actual xs allow-nil allow-blank message-fn]
+  [m attribute actual xs allow-nil allow-blank message-fn]
   (if (or (member? xs (count actual))
           (allowed-to-be-blank? actual allow-nil allow-blank))
     [true {}]
-    [false {attribute #{(message-fn :length:within attribute actual xs)}}]))
+    [false {attribute #{(message-fn :length:within m attribute xs)}}]))
 
 
 
@@ -58,8 +58,8 @@ functions, validation results are returned as values."}
 
    Accepted options:
    :message (default:\"can't be blank\"): returned error message
-   :message-fn (default:nil): function to retrieve message with signature (fn [type attribute value & args])
-                              type will be :blank, args will be empty
+   :message-fn (default:nil): function to retrieve message with signature (fn [type map attribute & args])
+                              type will be :blank, args will be nil
 
    Used in conjunction with validation-set:
 
@@ -76,7 +76,7 @@ functions, validation results are returned as values."}
             res    (and (not (nil? value))
                         (if (string? value)
                           (not (empty? (clojure.string/trim value))) true))
-            msg (msg-fn :blank attribute value)
+            msg (msg-fn :blank m attribute)
             errors (if res {} {attribute #{msg}})]
         [(empty? errors) errors]))))
 
@@ -90,7 +90,7 @@ functions, validation results are returned as values."}
   
    :messages : a map of type->message to be merge with defaults
    :message-fn (default:nil):
-               function to retrieve message with signature (fn [type attribute value & args])
+               function to retrieve message with signature (fn [type map attribute & args])
                type will be one of [:blank :number :integer  :odd  :even  :equal-to :gt  :gte :lt :lte] prefixed with :numeric
                args will be the numeric constraint if any
 
@@ -129,7 +129,7 @@ functions, validation results are returned as values."}
                (fn [errors [type [validation args]]]
                  (comment println errors type attribute validation args)
                  (if (validation)
-                   (assoc-with-union errors attribute #{(apply msg-fn type attribute v args)})
+                   (assoc-with-union errors attribute #{(apply msg-fn type m attribute args)})
                    errors))
                {}
                {:blank     [#(and (nil? v) (not allow-nil))                    []]
@@ -155,7 +155,7 @@ functions, validation results are returned as values."}
 
    :message (default:\"must be accepted\"): returned error message
    :blank-message (default:\"can't be blank\"): returned error message if value is not present
-   :message-fn function to retrieve message with signature (fn [type attribute value & args]).
+   :message-fn function to retrieve message with signature (fn [type map attribute & args]).
                type will be :blank or :acceptance, args will be the set of accepted values
    
    :allow-nil (default: false): should nil values be allowed?
@@ -173,15 +173,15 @@ functions, validation results are returned as values."}
                 :or {allow-nil false, accept #{true "true" "1"},
                      message "must be accepted", blank-message "can't be blank"}}]
   (let [f (if (vector? attribute) get-in get)
-        msg-fn (fn [t v msg] (if message-fn (message-fn t attribute v accept)
+        msg-fn (fn [t m msg] (if message-fn (message-fn t m attribute  accept)
                               msg))]
     (fn [m]
       (let [v (f m attribute)]
         (if (and (nil? v) (not allow-nil))
-          [false {attribute #{(msg-fn :blank v blank-message)}}]
+          [false {attribute #{(msg-fn :blank m blank-message)}}]
           (if (accept v)
             [true {}]
-            [false {attribute #{(msg-fn :acceptance v message)}}]))))))
+            [false {attribute #{(msg-fn :acceptance m message)}}]))))))
 
 
 
@@ -191,7 +191,7 @@ functions, validation results are returned as values."}
    Accepted options:
 
    :blank-message (default:\"can't be blank\"): returned error message if value is not present
-   :message-fn (default:nil): function to retrieve message with signature (fn [type attribute value & args]).
+   :message-fn (default:nil): function to retrieve message with signature (fn [type map attribute & args]).
                               type will be :blank or :inclusion, args will be the set of valid values
 
    :allow-nil (default: false): should nil values be allowed?
@@ -208,16 +208,16 @@ functions, validation results are returned as values."}
   [attribute & {:keys [allow-nil in blank-message message-fn]
                 :or {allow-nil false, blank-message "can't be blank"}}]
   (let [f (if (vector? attribute) get-in get)
-        msg-fn (fn [t v] (if message-fn (message-fn t attribute v in)
+        msg-fn (fn [t m] (if message-fn (message-fn t m attribute in)
                             (if (= t :blank) blank-message
                                 (str "must be one of: " (clojure.string/join ", " in)))))]
     (fn [m]
       (let [v (f m attribute)]
         (if (and (nil? v) (not allow-nil))
-          [false {attribute #{(msg-fn :blank v)}}]
+          [false {attribute #{(msg-fn :blank m)}}]
           (if (in v)
             [true {}]
-            [false {attribute #{(msg-fn :inclusion v)}}]))))))
+            [false {attribute #{(msg-fn :inclusion m)}}]))))))
 
 
 
@@ -227,7 +227,7 @@ functions, validation results are returned as values."}
    Accepted options:
 
    :blank-message (default:\"can't be blank\"): returned error message if value is not present
-   :message-fn (default nil): function to retrieve message with signature (fn [type attribute value & args]).
+   :message-fn (default nil): function to retrieve message with signature (fn [type map attribute & args]).
                               type will be :blank or :exclusion, args will be the set of invalid values
 
    :allow-nil (default: false): should nil values be allowed?
@@ -244,16 +244,16 @@ functions, validation results are returned as values."}
   [attribute & {:keys [allow-nil in blank-message message-fn]
                 :or {allow-nil false, blank-message "can't be blank"}}]
   (let [f (if (vector? attribute) get-in get)
-        msg-fn (fn [t v] (if message-fn (message-fn t attribute v in)
+        msg-fn (fn [t m] (if message-fn (message-fn t m attribute in)
                             (if (= t :blank) blank-message
                                 (str "must not be one of: " (clojure.string/join ", " in)))))]
     (fn [m]
       (let [v (f m attribute)]
         (if (and (nil? v) (not allow-nil))
-          [false {attribute #{(msg-fn :blank v)}}]
+          [false {attribute #{(msg-fn :blank m)}}]
           (if-not (in v)
             [true {}]
-            [false {attribute #{(msg-fn :exclusion v)}}]))))))
+            [false {attribute #{(msg-fn :exclusion m)}}]))))))
 
 
 
@@ -267,7 +267,7 @@ functions, validation results are returned as values."}
    :format (default: nil): a regular expression of the format
    :message (default: \"has incorrect format\"): an error message for invalid values
    :blank-message (default:\"can't be blank\"): returned error message if value is not present
-   :message-fn (default nil): function to retrieve message with signature (fn [type attribute value & args]).
+   :message-fn (default nil): function to retrieve message with signature (fn [type map attribute & args]).
                               type will be :format or :blank, args will be the applied format
 
    Used in conjunction with validation-set:
@@ -282,16 +282,16 @@ functions, validation results are returned as values."}
                 :or {allow-nil false, allow-blank false, message "has incorrect format",
                      blank-message "can't be blank"}}]
   (let [f (if (vector? attribute) get-in get)
-        msg-fn (fn [t v] (if message-fn (message-fn t attribute v format)
+        msg-fn (fn [t m] (if message-fn (message-fn t m attribute format)
                             (if (= t :blank) blank-message message)))]
     (fn [m]
       (let [v (f m attribute)]
         (if (not-allowed-to-be-blank? v allow-nil allow-blank)
-          [false {attribute #{(msg-fn :blank v)}}]
+          [false {attribute #{(msg-fn :blank m)}}]
           (if (or (allowed-to-be-blank? v allow-nil allow-blank)
                   (re-find format v))
             [true {}]
-            [false {attribute #{(msg-fn :format v)}}]))))))
+            [false {attribute #{(msg-fn :format m)}}]))))))
 
 
 
@@ -305,7 +305,7 @@ functions, validation results are returned as values."}
    :is (default: nil): an exact length, as long
    :within (default: nil): a range of lengths
    :blank-message (default:\"can't be blank\"): returned error message if value is not present
-   :message-fn (default nil): function to retrieve message with signature (fn [type attribute value & args]).
+   :message-fn (default nil): function to retrieve message with signature (fn [type m attribute & args]).
                               type will be :length:is or :length:within, args will be the applied number or range
 
    Used in conjunction with validation-set:
@@ -333,8 +333,8 @@ functions, validation results are returned as values."}
         (if (not-allowed-to-be-blank? v allow-nil allow-blank)
           [false {attribute #{"can't be blank"}}]
           (if within
-            (range-length-of attribute v within allow-nil allow-blank msg-fn-is)
-            (equal-length-of attribute v is     allow-nil allow-blank msg-fn-within)))))))
+            (range-length-of m attribute v within allow-nil allow-blank msg-fn-is)
+            (equal-length-of m attribute v is     allow-nil allow-blank msg-fn-within)))))))
 
 
 

@@ -27,5 +27,5 @@
                [false {:a #{"test"}}])))
       
       (testing "with optional message-fn"
-        (is (= ((presence-of :a :message-fn message-fn) {:a ""})
-               [false {:a #{[:blank :a ""]}}]))))))
+        (is (= ((presence-of :a :message-fn message-fn) {:a "" :b "b"})
+               [false {:a #{[:blank {:a "" :b "b"} :a]}}]))))))
