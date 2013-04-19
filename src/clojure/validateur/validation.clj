@@ -116,7 +116,7 @@ functions, validation results are returned as values."}
                 :or {allow-nil false, only-integer false, odd false, even false}}]
   (let [f (if (vector? attribute) get-in get)
         msgs (merge {:blank "can't be blank"
-                     :number "should be a number" :integer "should be an integer"
+                     :number "should be a number" :only-integer "should be an integer"
                      :odd "should be odd" :even "should be even"
                      :equal-to "should be equal to " :gt "should be greater than "
                      :gte  "should be greater than or equal to " :lt "should be less than "
@@ -132,16 +132,16 @@ functions, validation results are returned as values."}
                    (assoc-with-union errors attribute #{(apply msg-fn type m attribute args)})
                    errors))
                {}
-               {:blank     [#(and (nil? v) (not allow-nil))                    []]
-                :number    [#(and v (not (number? v)))                         []]
-                :integer   [#(and v only-integer (not (integer? v)))           []]
-                :odd       [#(and v (number? v) odd (not (odd? v)))            []]
-                :even      [#(and v (number? v) even (not (even? v)))          []]
-                :equal-to  [#(and v (number? v) equal-to (not (= equal-to v))) [equal-to]]
-                :gt        [#(and v (number? v) gt (not (> v gt)))             [gt]]
-                :gte       [#(and v (number? v) gte (not (>= v gte)))          [gte]]
-                :lt        [#(and v (number? v) lt (not (< v lt)))             [lt]]
-                :lte       [#(and v (number? v) lte (not (<= v lte)))          [lte]]
+               {:blank        [#(and (nil? v) (not allow-nil))                    []]
+                :number       [#(and v (not (number? v)))                         []]
+                :only-integer [#(and v only-integer (not (integer? v)))           []]
+                :odd          [#(and v (number? v) odd (not (odd? v)))            []]
+                :even         [#(and v (number? v) even (not (even? v)))          []]
+                :equal-to     [#(and v (number? v) equal-to (not (= equal-to v))) [equal-to]]
+                :gt           [#(and v (number? v) gt (not (> v gt)))             [gt]]
+                :gte          [#(and v (number? v) gte (not (>= v gte)))          [gte]]
+                :lt           [#(and v (number? v) lt (not (< v lt)))             [lt]]
+                :lte          [#(and v (number? v) lte (not (<= v lte)))          [lte]]
                  })]
         [(empty? e) e]))))
 

@@ -4,6 +4,8 @@
 
 (println (str "Using Clojure version " *clojure-version*))
 
+(defn test-message-fn [type map attr & args]
+  [type map attr args])
 ;;
 ;; validation-set
 ;;
@@ -47,6 +49,9 @@
   (let [v (presence-of :name :message "Низя, должно быть заполнено!")]
     (is (= [false { :name #{"Низя, должно быть заполнено!"} }] (v { :age 28 })))))
 
+(deftest test-presence-of-validator-with-optional-message-fn
+  (let [v (presence-of :name :message-fn test-message-fn)]
+    (is (= [false { :name #{[:blank {:age 28} :name nil]} }] (v { :age 28 })))))
 
 ;;
 ;; numericality-of
@@ -136,7 +141,35 @@
     (is (= [false { :age #{"should be even"} }]     (v { :age 21 })))))
 
 
+(deftest test-numerical-validator-with-optional-messages
+  (let [msgs {:number "number" :blank "blank"
+              :only-integer "integer" :equal-to "equal to "}
+        v #(numericality-of :age %1 %2 :messages msgs)]
+    (testing "only integers"
+      (is (= [false { :age #{"number" "integer"} }]
+             ((v :only-integer true) { :age "Twenty six" })))
+      (is (= [false { :age #{"integer"} }]
+             ((v :only-integer true) { :age 26.6 }))))
+    (testing "equal to"
+      (is (= [false { :age #{"blank"} }]
+             ((v :equal-to 1) { :age nil })))
+      (is (= [false { :age #{"equal to 1"} }]
+             ((v :equal-to 1) { :age 26.6 }))))
+    (testing "optional messages are merged with default ones"
+      (is (= [false { :age #{"should be greater than 40"} }]
+             ((v :gt 40) { :age 20 })))
+      (is (= [false { :age #{"should be odd"} }]
+             ((v :odd true) { :age 20 }))))))
 
+(deftest test-numerical-validator-with-optional-message-fn
+  (let [v #(numericality-of :age %1 %2 :message-fn test-message-fn)]
+    (testing "only integers"
+      (is (= [false { :age #{[:number {:age "26"} :age nil]
+                             [:only-integer {:age "26"} :age nil]} }]
+             ((v :only-integer true) { :age "26" })))
+      (is (= [false { :age #{[:only-integer
+                              {:age 26.6 :other-key 1} :age nil]}}]
+             ((v :only-integer true) { :age 26.6 :other-key 1}))))))
 ;;
 ;; acceptance-of
 ;;
