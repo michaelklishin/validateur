@@ -124,7 +124,7 @@ functions, validation results are returned as values."}
                     messages)]
     (fn [m]
       (let [v (f m attribute)
-            msg-fn (or message-fn (fn [type _ & args] (apply str (msgs type) args)))
+            msg-fn (or message-fn (fn [type _ _ & args] (apply str (msgs type) args)))
             e (reduce
                (fn [errors [type [validation args]]]
                  (comment println errors type attribute validation args)
@@ -333,8 +333,8 @@ functions, validation results are returned as values."}
         (if (not-allowed-to-be-blank? v allow-nil allow-blank)
           [false {attribute #{"can't be blank"}}]
           (if within
-            (range-length-of m attribute v within allow-nil allow-blank msg-fn-is)
-            (equal-length-of m attribute v is     allow-nil allow-blank msg-fn-within)))))))
+            (range-length-of m attribute v within allow-nil allow-blank msg-fn-within)
+            (equal-length-of m attribute v is     allow-nil allow-blank msg-fn-is)))))))
 
 
 
