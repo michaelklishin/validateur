@@ -163,13 +163,14 @@
 
 (deftest test-numerical-validator-with-optional-message-fn
   (let [v #(numericality-of :age %1 %2 :message-fn test-message-fn)]
-    (testing "only integers"
-      (is (= [false { :age #{[:number {:age "26"} :age nil]
-                             [:only-integer {:age "26"} :age nil]} }]
-             ((v :only-integer true) { :age "26" })))
-      (is (= [false { :age #{[:only-integer
-                              {:age 26.6 :other-key 1} :age nil]}}]
-             ((v :only-integer true) { :age 26.6 :other-key 1}))))))
+    (is (= [false {:age #{[:number {:age "26"} :age nil]
+                          [:only-integer {:age "26"} :age nil]} }]
+           ((v :only-integer true) {:age "26" })))
+    (is (= [false {:age #{[:only-integer
+                           {:age 26.6 :other-key 1} :age nil]}}]
+           ((v :only-integer true) {:age 26.6 :other-key 1})))
+    (is (= [false {:age #{[:equal-to {:age 26.6} :age [666]]}}]
+           ((v :equal-to 666) {:age 26.6})))))
 ;;
 ;; acceptance-of
 ;;
@@ -197,7 +198,42 @@
     (is (= [false { :terms-and-conditions #{"must be accepted"} }] (v { :terms-and-conditions "1" })))
     (is (= [false { :terms-and-conditions #{"must be accepted"} }] (v { :terms-and-conditions "jeez no" })))))
 
+(deftest test-acceptance-validator-with-custom-blank-message
+  (let [v (acceptance-of :terms-and-conditions :blank-message "ZOMG")]
+    (is (fn? v))
+    (is (= [true {}]
+           (v { :terms-and-conditions true })))
+    (is (= [false { :terms-and-conditions #{"ZOMG"} }]
+           (v { :terms-and-conditions nil })))))
 
+(deftest test-acceptance-validator-with-custom-message-fn
+  (let [v (acceptance-of :terms-and-conditions :message-fn test-message-fn)
+        valid { :terms-and-conditions true}
+        invalid { :terms-and-conditions "I do not approve it"}
+        invalid-blank { :terms-and-conditions nil}
+        default-acceptance-values #{"true" true "1"}]
+    (is (fn? v))
+    (is (= [true {}] (v valid)))
+    (is (= [false { :terms-and-conditions
+                   #{[:acceptance invalid :terms-and-conditions
+                      [default-acceptance-values]]}}]
+           (v invalid )))
+    (is (= [false { :terms-and-conditions
+                   #{[:blank invalid-blank :terms-and-conditions nil]}}]
+           (v invalid-blank )))))
+
+(deftest test-acceptance-validator-with-custom-accepted-values-and-message-fn
+  (let [acceptance-values #{"yes" "hell yes"}
+        v (acceptance-of :terms-and-conditions :message-fn test-message-fn
+                         :accept acceptance-values)
+        valid { :terms-and-conditions "hell yes"}
+        invalid { :terms-and-conditions "I do not approve it"}]
+    (is (fn? v))
+    (is (= [true {}] (v valid)))
+    (is (= [false { :terms-and-conditions
+                   #{[:acceptance invalid :terms-and-conditions
+                      [acceptance-values]]}}]
+           (v invalid )))))
 ;;
 ;; inclusion-of
 ;;

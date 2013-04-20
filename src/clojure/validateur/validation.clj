@@ -173,15 +173,15 @@ functions, validation results are returned as values."}
                 :or {allow-nil false, accept #{true "true" "1"},
                      message "must be accepted", blank-message "can't be blank"}}]
   (let [f (if (vector? attribute) get-in get)
-        msg-fn (fn [t m msg] (if message-fn (message-fn t m attribute  accept)
-                              msg))]
+        msg-fn (fn [t m msg & args]
+                 (if message-fn (apply message-fn t m attribute args) msg))]
     (fn [m]
       (let [v (f m attribute)]
         (if (and (nil? v) (not allow-nil))
           [false {attribute #{(msg-fn :blank m blank-message)}}]
           (if (accept v)
             [true {}]
-            [false {attribute #{(msg-fn :acceptance m message)}}]))))))
+            [false {attribute #{(msg-fn :acceptance m message accept)}}]))))))
 
 
 
