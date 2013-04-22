@@ -205,19 +205,21 @@ functions, validation results are returned as values."}
      (presence-of :name)
      (presence-of :age)
      (inclusion-of :team :in #{\"red\" \"blue\"}))"
-  [attribute & {:keys [allow-nil in blank-message message-fn]
-                :or {allow-nil false, blank-message "can't be blank"}}]
+  [attribute & {:keys [allow-nil in message blank-message message-fn]
+                :or {allow-nil false, message "must be one of: ",
+                     blank-message "can't be blank"}}]
   (let [f (if (vector? attribute) get-in get)
-        msg-fn (fn [t m] (if message-fn (message-fn t m attribute in)
-                            (if (= t :blank) blank-message
-                                (str "must be one of: " (clojure.string/join ", " in)))))]
+        blank-msg-fn (fn [m] (if message-fn (message-fn :blank m attribute)
+                                blank-message))
+        msg-fn (fn [m] (if message-fn (message-fn :inclusion m attribute in)
+                          (str message (clojure.string/join ", " in))))]
     (fn [m]
       (let [v (f m attribute)]
         (if (and (nil? v) (not allow-nil))
-          [false {attribute #{(msg-fn :blank m)}}]
+          [false {attribute #{(blank-msg-fn m)}}]
           (if (in v)
             [true {}]
-            [false {attribute #{(msg-fn :inclusion m)}}]))))))
+            [false {attribute #{(msg-fn m)}}]))))))
 
 
 
@@ -241,19 +243,21 @@ functions, validation results are returned as values."}
      (presence-of :name)
      (presence-of :age)
      (exclusion-of :status :in #{\"banned\" \"non-activated\"}))"
-  [attribute & {:keys [allow-nil in blank-message message-fn]
-                :or {allow-nil false, blank-message "can't be blank"}}]
+  [attribute & {:keys [allow-nil in message blank-message message-fn]
+                :or {allow-nil false, message "must not be one of: ",
+                     blank-message "can't be blank"}}]
   (let [f (if (vector? attribute) get-in get)
-        msg-fn (fn [t m] (if message-fn (message-fn t m attribute in)
-                            (if (= t :blank) blank-message
-                                (str "must not be one of: " (clojure.string/join ", " in)))))]
+        blank-msg-fn (fn [m] (if message-fn (message-fn :blank m attribute)
+                                blank-message))
+        msg-fn (fn [m] (if message-fn (message-fn :exclusion m attribute in)
+                          (str message (clojure.string/join ", " in))))]
     (fn [m]
       (let [v (f m attribute)]
         (if (and (nil? v) (not allow-nil))
-          [false {attribute #{(msg-fn :blank m)}}]
+          [false {attribute #{(blank-msg-fn m)}}]
           (if-not (in v)
             [true {}]
-            [false {attribute #{(msg-fn :exclusion m)}}]))))))
+            [false {attribute #{(msg-fn m)}}]))))))
 
 
 
