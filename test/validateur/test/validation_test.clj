@@ -367,6 +367,25 @@
     (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "dnb" })))
     (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "melodic power metal" })))))
 
+(deftest test-length-validator-with-fixed-length-with-optional-blank-message
+  (let [v (length-of :title :is 11 :blank-message "test blank")]
+    (is (fn? v))
+    (is (= [false { :title #{"test blank"} }]
+           (v { :title nil })))
+    (is (= [true {}]
+           (v { :title "power metal" })))))
+
+(deftest test-length-validator-with-fixed-length-with-optional-message-fn
+  (let [v (length-of :title :is 11 :message-fn test-message-fn)]
+    (is (fn? v))
+    (is (= [false {:title #{[:blank {:title nil} :title nil]}}]
+           (v { :title nil })))
+    (is (= [true {}]
+           (v { :title "power metal" })))
+    (is (= [false { :title #{[:length:is {:title "trance"} :title [11]]} }]
+           (v { :title "trance" })))))
+
+
 (deftest test-length-validator-with-range-length
   (let [v (length-of :title :within (range 9 13))]
     (is (fn? v))
@@ -375,6 +394,14 @@
     (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "trance" })))
     (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "dnb" })))
     (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "melodic power metal" })))))
+
+(deftest test-length-validator-with-range-length-with-optional-blank-message
+  (let [v (length-of :title :within (range 9 13) :blank-message "test blank")]
+    (is (fn? v))
+    (is (= [false { :title #{"test blank"} }]
+           (v { :title nil })))
+    (is (= [true {}]
+           (v { :title "power metal" })))))
 
 (deftest test-length-validator-with-range-length-that-allows-blanks
   (let [v (length-of :title :within (range 9 13) :allow-nil true :allow-blank true)]
@@ -386,6 +413,15 @@
     (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "dnb" })))
     (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "melodic power metal" })))))
 
+(deftest test-length-validator-with-range-length-with-optional-message-fn
+  (let [v (length-of :title :within (range 9 13) :message-fn test-message-fn)]
+    (is (fn? v))
+    (is (= [false { :title #{[:blank {:title nil} :title nil]} }]
+           (v { :title nil })))
+    (is (= [true {}]
+           (v { :title "power metal" })))
+    (is (= [false { :title #{[:length:within {:title "trance"} :title [(range 9 13)]]} }]
+           (v { :title "trance" })))))
 
 ;;
 ;; format-of
@@ -406,10 +442,26 @@
     (is (= [true {}]                                 (v { :id "abc-123" })))
     (is (= [false { :id #{"has incorrect format"} }] (v { :id "123-abc" })))))
 
+(deftest test-format-of-validator-with-optional-blank-message
+  (let [v (format-of :id :format #"abc-\d\d\d" :blank-message "test blank")]
+    (is (fn? v))
+    (is (= [false { :id #{"test blank"} }]           (v { :id nil })))
+    (is (= [true {}]                                 (v { :id "abc-123" })))))
+
 (deftest test-format-of-validator-with-custom-message
   (let [v (format-of :id :format #"abc-\d\d\d" :message "is improperly formatted")]
     (is (= [false { :id #{"is improperly formatted"} }] (v { :id "123-abc" })))))
 
+(deftest test-format-of-validator-with-optional-message-fn
+  (let [test-message-equals-regexp (fn [t m attr & args] [t m attr (map str args)])
+        v (format-of :id :format #"abc-\d\d\d" :message-fn test-message-equals-regexp)]
+    (is (fn? v))
+    (is (= [false { :id #{[:blank {:id nil} :id []]} }]
+           (v { :id nil })))
+    (is (= [true {}]
+           (v { :id "abc-123" })))
+    (is (= [false { :id #{[:format {:id "123-abc"} :id ["abc-\\d\\d\\d"]]} }]
+           (v { :id "123-abc" })))))
 
 
 ;;

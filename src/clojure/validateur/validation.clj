@@ -191,6 +191,8 @@ functions, validation results are returned as values."}
    Accepted options:
 
    :blank-message (default:\"can't be blank\"): returned error message if value is not present
+   :message (default: \"must be one of: \"): returned error message
+                                             (with comma-separated valid values appended)
    :message-fn (default:nil): function to retrieve message with signature (fn [type map attribute & args]).
                               type will be :blank or :inclusion, args will be the set of valid values
 
@@ -231,7 +233,8 @@ functions, validation results are returned as values."}
    :blank-message (default:\"can't be blank\"): returned error message if value is not present
    :message-fn (default nil): function to retrieve message with signature (fn [type map attribute & args]).
                               type will be :blank or :exclusion, args will be the set of invalid values
-
+   :message (default: \"must not be one of: \"): returned error message
+                                                 (with comma separated list of invalid values appended)
    :allow-nil (default: false): should nil values be allowed?
    :in (default: nil): a collection of invalid values for the attribute
 
@@ -286,7 +289,8 @@ functions, validation results are returned as values."}
                 :or {allow-nil false, allow-blank false, message "has incorrect format",
                      blank-message "can't be blank"}}]
   (let [f (if (vector? attribute) get-in get)
-        msg-fn (fn [t m] (if message-fn (message-fn t m attribute format)
+        msg-fn (fn [t m] (if message-fn (apply message-fn t m attribute
+                                              (when (= t :format) [format]))
                             (if (= t :blank) blank-message message)))]
     (fn [m]
       (let [v (f m attribute)]
@@ -329,13 +333,14 @@ functions, validation results are returned as values."}
                 :or {allow-nil false, allow-blank false,
                      blank-message "can't be blank"}}]
   (let [f (if (vector? attribute) get-in get)
+        msg-fn-blank #(if message-fn (message-fn :blank % attribute) blank-message)
         msg-fn-is (or message-fn #(str "must be " %4 " characters long"))
         msg-fn-within (or message-fn #(str "must be from " (first %4) " to "
                                            (last %4) " characters long"))]
     (fn [m]
       (let [v (f m attribute)]
         (if (not-allowed-to-be-blank? v allow-nil allow-blank)
-          [false {attribute #{"can't be blank"}}]
+          [false {attribute #{(msg-fn-blank m)}}]
           (if within
             (range-length-of m attribute v within allow-nil allow-blank msg-fn-within)
             (equal-length-of m attribute v is     allow-nil allow-blank msg-fn-is)))))))
