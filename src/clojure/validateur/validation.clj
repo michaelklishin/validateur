@@ -91,7 +91,8 @@ functions, validation results are returned as values."}
    :messages : a map of type->message to be merge with defaults
    :message-fn (default:nil):
                function to retrieve message with signature (fn [type map attribute & args])
-               type will be one of [:blank :number :integer  :odd  :even  :equal-to :gt  :gte :lt :lte] prefixed with :numeric
+               type will be one of [:blank :number :integer  :odd  :even
+                                    :equal-to :gt  :gte :lt :lte]
                args will be the numeric constraint if any
 
    :allow-nil (default: false): should nil values be allowed?
@@ -141,8 +142,7 @@ functions, validation results are returned as values."}
                 :gt           [#(and v (number? v) gt (not (> v gt)))             [gt]]
                 :gte          [#(and v (number? v) gte (not (>= v gte)))          [gte]]
                 :lt           [#(and v (number? v) lt (not (< v lt)))             [lt]]
-                :lte          [#(and v (number? v) lte (not (<= v lte)))          [lte]]
-                 })]
+                :lte          [#(and v (number? v) lte (not (<= v lte)))          [lte]]})]
         [(empty? e) e]))))
 
 
