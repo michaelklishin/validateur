@@ -110,7 +110,6 @@ functions, validation results are returned as values."}
             ;; here until MK approves. OP
             e (reduce
                (fn [errors [validation message]]
-                 (println errors validation message attribute)
                  (if (validation)
                    (assoc-with-union errors attribute message)
                    errors))
