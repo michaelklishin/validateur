@@ -2,13 +2,31 @@
 
 ### Optional messages in built-in validators
 
-All built-in validators accept optional messages for all cases. Their
-formatting is fixed and based in default ones.
-	
+All built-in validators but length-of accept optional messages for all
+cases. Their formatting is fixed and based in default ones.
+For example:
+
+``` clojure
+((inclusion-of :genre :in #{"trance", "dnb"} :message "debe pertenecer a:") 
+ {:genre "pasodoble"})
+;; [false {:genre #{"debe pertenecer a: trance, dnb"}}]
+```
+
 ### Optional function callback to parametrize the construction of messages 
 
+All built-in validators accept an optional function callback which
+will be called by the validator to build the returned error message.
+The main goal is to facilitate the inclusion of i18n in messages (like
+previous one but in a more flexible way).
+For example:
 
-	
+``` clojure
+((inclusion-of :genre :in #{"trance", "dnb"}
+               :message-fn (fn [validator map prop & accepted-vals])) 
+ {:genre "pasodoble"})
+```
+
+
 ## Changes between Validateur 1.3.0 and 1.4.0
 
 ### Clojure 1.5.1 By Default
