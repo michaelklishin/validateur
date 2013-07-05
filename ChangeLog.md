@@ -22,8 +22,10 @@ For example:
 
 ``` clojure
 ((inclusion-of :genre :in #{"trance", "dnb"}
-               :message-fn (fn [validator map prop & accepted-vals])) 
+               :message-fn (fn [validator map prop & args]
+                              [validator map prop args])) 
  {:genre "pasodoble"})
+;; [false {:genre #{[:inclusion {:genre "pasodoble"} :genre (#{"trance" "dnb"})]}}]
 ```
 
 
