@@ -1,4 +1,4 @@
-## Changes between Validateur 1.4.0 and 1.4.1
+## Changes between Validateur 1.4.0 and 1.5.0
 
 ### Optional messages in built-in validators
 
@@ -7,12 +7,12 @@ cases. Their formatting is fixed and based in default ones.
 For example:
 
 ``` clojure
-((inclusion-of :genre :in #{"trance", "dnb"} :message "debe pertenecer a:") 
+((inclusion-of :genre :in #{"trance", "dnb"} :message "debe pertenecer a:")
  {:genre "pasodoble"})
 ;; [false {:genre #{"debe pertenecer a: trance, dnb"}}]
 ```
 
-### Optional function callback to parametrize the construction of messages 
+### Optional function callback to parametrize the construction of messages
 
 All built-in validators accept an optional function callback which
 will be called by the validator to build the returned error message.
@@ -23,7 +23,7 @@ For example:
 ``` clojure
 ((inclusion-of :genre :in #{"trance", "dnb"}
                :message-fn (fn [validator map prop & args]
-                              [validator map prop args])) 
+                              [validator map prop args]))
  {:genre "pasodoble"})
 ;; [false {:genre #{[:inclusion {:genre "pasodoble"} :genre (#{"trance" "dnb"})]}}]
 ```
