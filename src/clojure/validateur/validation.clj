@@ -34,18 +34,18 @@ functions, validation results are returned as values."}
 
 
 (defn- equal-length-of
-  [attribute actual expected-length allow-nil allow-blank]
+  [m attribute actual expected-length allow-nil allow-blank message-fn]
   (if (or (= expected-length (count actual))
           (allowed-to-be-blank? actual allow-nil allow-blank))
     [true {}]
-    [false {attribute #{(str "must be " expected-length " characters long")}}]))
+    [false {attribute #{(message-fn :length:is m attribute expected-length)}}]))
 
 (defn- range-length-of
-  [attribute actual xs allow-nil allow-blank]
+  [m attribute actual xs allow-nil allow-blank message-fn]
   (if (or (member? xs (count actual))
           (allowed-to-be-blank? actual allow-nil allow-blank))
     [true {}]
-    [false {attribute #{(str "must be from " (first xs) " to " (last xs) " characters long")}}]))
+    [false {attribute #{(message-fn :length:within m attribute xs)}}]))
 
 
 
@@ -56,6 +56,11 @@ functions, validation results are returned as values."}
 (defn presence-of
   "Returns a function that, when given a map, will validate presence of the attribute in that map.
 
+   Accepted options:
+   :message (default:\"can't be blank\"): returned error message
+   :message-fn (default:nil): function to retrieve message with signature (fn [type map attribute & args])
+                              type will be :blank, args will be nil
+
    Used in conjunction with validation-set:
 
    (use 'validateur.validation)
@@ -63,14 +68,16 @@ functions, validation results are returned as values."}
    (validation-set
      (presence-of :name)
      (presence-of :age))"
-  [attribute & {:keys [message] :or {message "can't be blank"}}]
-  (let [f (if (vector? attribute) get-in get)]
+  [attribute & {:keys [message message-fn] :or {message "can't be blank"}}]
+  (let [f (if (vector? attribute) get-in get)
+        msg-fn (or message-fn (constantly message))]
     (fn [m]
       (let [value  (f m attribute)
             res    (and (not (nil? value))
                         (if (string? value)
                           (not (empty? (clojure.string/trim value))) true))
-            errors (if res {} {attribute #{message}})]
+            msg (msg-fn :blank m attribute)
+            errors (if res {} {attribute #{msg}})]
         [(empty? errors) errors]))))
 
 (def ^{:private true}
@@ -80,6 +87,13 @@ functions, validation results are returned as values."}
   "Returns a function that, when given a map, will validate that the value of the attribute in that map is numerical.
 
    Accepted options:
+  
+   :messages : a map of type->message to be merge with defaults
+   :message-fn (default:nil):
+               function to retrieve message with signature (fn [type map attribute & args])
+               type will be one of [:blank :number :integer  :odd  :even
+                                    :equal-to :gt  :gte :lt :lte]
+               args will be the numeric constraint if any
 
    :allow-nil (default: false): should nil values be allowed?
    :only-integer (default: false): should only integer values be allowed?
@@ -99,32 +113,35 @@ functions, validation results are returned as values."}
      (presence-of :name)
      (presence-of :age)
      (numericality-of :age :only-integer true :gte 18))"
-  [attribute & {:keys [allow-nil only-integer gt gte lt lte equal-to odd even] :or {allow-nil false
-                                                                                     only-integer false
-                                                                                     odd false
-                                                                                     even false}}]
-  (let [f (if (vector? attribute) get-in get)]
+  [attribute & {:keys [allow-nil only-integer gt gte lt lte equal-to odd even messages message-fn]
+                :or {allow-nil false, only-integer false, odd false, even false}}]
+  (let [f (if (vector? attribute) get-in get)
+        msgs (merge {:blank "can't be blank"
+                     :number "should be a number" :only-integer "should be an integer"
+                     :odd "should be odd" :even "should be even"
+                     :equal-to "should be equal to " :gt "should be greater than "
+                     :gte  "should be greater than or equal to " :lt "should be less than "
+                     :lte "should be less than or equal to "}
+                    messages)]
     (fn [m]
       (let [v (f m attribute)
-            ;; this is an attempt to improve the validation code, leaving the ugliness warning
-            ;; here until MK approves. OP
+            msg-fn (or message-fn (fn [type _ _ & args] (apply str (msgs type) args)))
             e (reduce
-               (fn [errors [validation message]]
+               (fn [errors [type [validation args]]]
                  (if (validation)
-                   (assoc-with-union errors attribute message)
+                   (assoc-with-union errors attribute #{(apply msg-fn type m attribute args)})
                    errors))
                {}
-               { #(and (nil? v) (not allow-nil))                    #{"can't be blank"}
-                 #(and v (not (number? v)))                         #{"should be a number"}
-                 #(and v only-integer (not (integer? v)))           #{"should be an integer"}
-                 #(and v (number? v) odd (not (odd? v)))            #{"should be odd"}
-                 #(and v (number? v) even (not (even? v)))          #{"should be even"}
-                 #(and v (number? v) equal-to (not (= equal-to v))) #{(str "should be equal to " equal-to)}
-                 #(and v (number? v) gt (not (> v gt)))             #{(str "should be greater than " gt)}
-                 #(and v (number? v) gte (not (>= v gte)))          #{(str "should be greater than or equal to " gte)}
-                 #(and v (number? v) lt (not (< v lt)))             #{(str "should be less than " lt)}
-                 #(and v (number? v) lte (not (<= v lte)))          #{(str "should be less than or equal to " lte)}
-                 })]
+               {:blank        [#(and (nil? v) (not allow-nil))                    []]
+                :number       [#(and v (not (number? v)))                         []]
+                :only-integer [#(and v only-integer (not (integer? v)))           []]
+                :odd          [#(and v (number? v) odd (not (odd? v)))            []]
+                :even         [#(and v (number? v) even (not (even? v)))          []]
+                :equal-to     [#(and v (number? v) equal-to (not (= equal-to v))) [equal-to]]
+                :gt           [#(and v (number? v) gt (not (> v gt)))             [gt]]
+                :gte          [#(and v (number? v) gte (not (>= v gte)))          [gte]]
+                :lt           [#(and v (number? v) lt (not (< v lt)))             [lt]]
+                :lte          [#(and v (number? v) lte (not (<= v lte)))          [lte]]})]
         [(empty? e) e]))))
 
 
@@ -135,6 +152,11 @@ functions, validation results are returned as values."}
 
    Accepted options:
 
+   :message (default:\"must be accepted\"): returned error message
+   :blank-message (default:\"can't be blank\"): returned error message if value is not present
+   :message-fn function to retrieve message with signature (fn [type map attribute & args]).
+               type will be :blank or :acceptance, args will be the set of accepted values
+   
    :allow-nil (default: false): should nil values be allowed?
    :accept (default: #{true, \"true\", \"1\"}): pass to use a custom list of values that will be considered accepted
 
@@ -146,15 +168,19 @@ functions, validation results are returned as values."}
      (presence-of :name)
      (presence-of :age)
      (acceptance-of :terms))"
-  [attribute & {:keys [allow-nil accept message] :or {allow-nil false accept #{true "true" "1"} message "must be accepted"}}]
-  (let [f (if (vector? attribute) get-in get)]
+  [attribute & {:keys [allow-nil accept message blank-message message-fn]
+                :or {allow-nil false, accept #{true "true" "1"},
+                     message "must be accepted", blank-message "can't be blank"}}]
+  (let [f (if (vector? attribute) get-in get)
+        msg-fn (fn [t m msg & args]
+                 (if message-fn (apply message-fn t m attribute args) msg))]
     (fn [m]
       (let [v (f m attribute)]
         (if (and (nil? v) (not allow-nil))
-          [false {attribute #{"can't be blank"}}]
+          [false {attribute #{(msg-fn :blank m blank-message)}}]
           (if (accept v)
             [true {}]
-            [false {attribute #{message}}]))))))
+            [false {attribute #{(msg-fn :acceptance m message accept)}}]))))))
 
 
 
@@ -162,6 +188,12 @@ functions, validation results are returned as values."}
   "Returns a function that, when given a map, will validate that the value of the attribute in that map is one of the given.
 
    Accepted options:
+
+   :blank-message (default:\"can't be blank\"): returned error message if value is not present
+   :message (default: \"must be one of: \"): returned error message
+                                             (with comma-separated valid values appended)
+   :message-fn (default:nil): function to retrieve message with signature (fn [type map attribute & args]).
+                              type will be :blank or :inclusion, args will be the set of valid values
 
    :allow-nil (default: false): should nil values be allowed?
    :in (default: nil): a collection of valid values for the attribute
@@ -174,15 +206,21 @@ functions, validation results are returned as values."}
      (presence-of :name)
      (presence-of :age)
      (inclusion-of :team :in #{\"red\" \"blue\"}))"
-  [attribute & {:keys [allow-nil in] :or {allow-nil false}}]
-  (let [f (if (vector? attribute) get-in get)]
+  [attribute & {:keys [allow-nil in message blank-message message-fn]
+                :or {allow-nil false, message "must be one of: ",
+                     blank-message "can't be blank"}}]
+  (let [f (if (vector? attribute) get-in get)
+        blank-msg-fn (fn [m] (if message-fn (message-fn :blank m attribute)
+                                blank-message))
+        msg-fn (fn [m] (if message-fn (message-fn :inclusion m attribute in)
+                          (str message (clojure.string/join ", " in))))]
     (fn [m]
       (let [v (f m attribute)]
         (if (and (nil? v) (not allow-nil))
-          [false {attribute #{"can't be blank"}}]
+          [false {attribute #{(blank-msg-fn m)}}]
           (if (in v)
             [true {}]
-            [false {attribute #{(str "must be one of: " (clojure.string/join ", " in))}}]))))))
+            [false {attribute #{(msg-fn m)}}]))))))
 
 
 
@@ -191,6 +229,11 @@ functions, validation results are returned as values."}
 
    Accepted options:
 
+   :blank-message (default:\"can't be blank\"): returned error message if value is not present
+   :message-fn (default nil): function to retrieve message with signature (fn [type map attribute & args]).
+                              type will be :blank or :exclusion, args will be the set of invalid values
+   :message (default: \"must not be one of: \"): returned error message
+                                                 (with comma separated list of invalid values appended)
    :allow-nil (default: false): should nil values be allowed?
    :in (default: nil): a collection of invalid values for the attribute
 
@@ -202,15 +245,21 @@ functions, validation results are returned as values."}
      (presence-of :name)
      (presence-of :age)
      (exclusion-of :status :in #{\"banned\" \"non-activated\"}))"
-  [attribute & {:keys [allow-nil in] :or {allow-nil false}}]
-  (let [f (if (vector? attribute) get-in get)]
+  [attribute & {:keys [allow-nil in message blank-message message-fn]
+                :or {allow-nil false, message "must not be one of: ",
+                     blank-message "can't be blank"}}]
+  (let [f (if (vector? attribute) get-in get)
+        blank-msg-fn (fn [m] (if message-fn (message-fn :blank m attribute)
+                                blank-message))
+        msg-fn (fn [m] (if message-fn (message-fn :exclusion m attribute in)
+                          (str message (clojure.string/join ", " in))))]
     (fn [m]
       (let [v (f m attribute)]
         (if (and (nil? v) (not allow-nil))
-          [false {attribute #{"can't be blank"}}]
+          [false {attribute #{(blank-msg-fn m)}}]
           (if-not (in v)
             [true {}]
-            [false {attribute #{(str "must not be one of: " (clojure.string/join ", " in))}}]))))))
+            [false {attribute #{(msg-fn m)}}]))))))
 
 
 
@@ -223,6 +272,9 @@ functions, validation results are returned as values."}
    :allow-blank (default: false): should blank string values be allowed?
    :format (default: nil): a regular expression of the format
    :message (default: \"has incorrect format\"): an error message for invalid values
+   :blank-message (default:\"can't be blank\"): returned error message if value is not present
+   :message-fn (default nil): function to retrieve message with signature (fn [type map attribute & args]).
+                              type will be :format or :blank, args will be the applied format
 
    Used in conjunction with validation-set:
 
@@ -232,17 +284,21 @@ functions, validation results are returned as values."}
      (presence-of :username)
      (presence-of :age)
      (format-of :username :format #\"[a-zA-Z0-9_]\")"
-  [attribute & {:keys [allow-nil allow-blank format message]
-                :or {allow-nil false allow-blank false message "has incorrect format"}}]
-  (let [f (if (vector? attribute) get-in get)]
+  [attribute & {:keys [allow-nil allow-blank format message blank-message message-fn]
+                :or {allow-nil false, allow-blank false, message "has incorrect format",
+                     blank-message "can't be blank"}}]
+  (let [f (if (vector? attribute) get-in get)
+        msg-fn (fn [t m] (if message-fn (apply message-fn t m attribute
+                                              (when (= t :format) [format]))
+                            (if (= t :blank) blank-message message)))]
     (fn [m]
       (let [v (f m attribute)]
         (if (not-allowed-to-be-blank? v allow-nil allow-blank)
-          [false {attribute #{"can't be blank"}}]
+          [false {attribute #{(msg-fn :blank m)}}]
           (if (or (allowed-to-be-blank? v allow-nil allow-blank)
                   (re-find format v))
             [true {}]
-            [false {attribute #{message}}]))))))
+            [false {attribute #{(msg-fn :format m)}}]))))))
 
 
 
@@ -255,6 +311,9 @@ functions, validation results are returned as values."}
    :allow-blank (default: false): should blank string values be allowed?
    :is (default: nil): an exact length, as long
    :within (default: nil): a range of lengths
+   :blank-message (default:\"can't be blank\"): returned error message if value is not present
+   :message-fn (default nil): function to retrieve message with signature (fn [type m attribute & args]).
+                              type will be :length:is or :length:within, args will be the applied number or range
 
    Used in conjunction with validation-set:
 
@@ -269,15 +328,21 @@ functions, validation results are returned as values."}
      (presence-of :name)
      (presence-of :age)
      (length-of :zip :is 5)"
-  [attribute & {:keys [allow-nil is within allow-blank] :or {allow-nil false allow-blank false}}]
-  (let [f (if (vector? attribute) get-in get)]
+  [attribute & {:keys [allow-nil is within allow-blank blank-message message-fn]
+                :or {allow-nil false, allow-blank false,
+                     blank-message "can't be blank"}}]
+  (let [f (if (vector? attribute) get-in get)
+        msg-fn-blank #(if message-fn (message-fn :blank % attribute) blank-message)
+        msg-fn-is (or message-fn #(str "must be " %4 " characters long"))
+        msg-fn-within (or message-fn #(str "must be from " (first %4) " to "
+                                           (last %4) " characters long"))]
     (fn [m]
       (let [v (f m attribute)]
         (if (not-allowed-to-be-blank? v allow-nil allow-blank)
-          [false {attribute #{"can't be blank"}}]
+          [false {attribute #{(msg-fn-blank m)}}]
           (if within
-            (range-length-of attribute v within allow-nil allow-blank)
-            (equal-length-of attribute v is     allow-nil allow-blank)))))))
+            (range-length-of m attribute v within allow-nil allow-blank msg-fn-within)
+            (equal-length-of m attribute v is     allow-nil allow-blank msg-fn-is)))))))
 
 
 
