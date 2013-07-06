@@ -128,7 +128,6 @@ functions, validation results are returned as values."}
             msg-fn (or message-fn (fn [type _ _ & args] (apply str (msgs type) args)))
             e (reduce
                (fn [errors [type [validation args]]]
-                 (comment println errors type attribute validation args)
                  (if (validation)
                    (assoc-with-union errors attribute #{(apply msg-fn type m attribute args)})
                    errors))
