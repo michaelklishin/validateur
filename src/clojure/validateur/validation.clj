@@ -87,7 +87,7 @@ functions, validation results are returned as values."}
   "Returns a function that, when given a map, will validate that the value of the attribute in that map is numerical.
 
    Accepted options:
-  
+
    :messages : a map of type->message to be merge with defaults
    :message-fn (default:nil):
                function to retrieve message with signature (fn [type map attribute & args])
@@ -156,7 +156,7 @@ functions, validation results are returned as values."}
    :blank-message (default:\"can't be blank\"): returned error message if value is not present
    :message-fn function to retrieve message with signature (fn [type map attribute & args]).
                type will be :blank or :acceptance, args will be the set of accepted values
-   
+
    :allow-nil (default: false): should nil values be allowed?
    :accept (default: #{true, \"true\", \"1\"}): pass to use a custom list of values that will be considered accepted
 
@@ -181,6 +181,33 @@ functions, validation results are returned as values."}
           (if (accept v)
             [true {}]
             [false {attribute #{(msg-fn :acceptance m message accept)}}]))))))
+
+
+
+(defn all-keys-in
+  "Returns a function that, when given a map, will validate that all keys in the map are drawn from a set of allowed keys.
+
+   Accepted options:
+
+   :unknown-message (default:\"unknown key\"): returned error message if key is not in allowed set
+
+   Used in conjunction with validation-set:
+
+   (validation-set
+     (all-keys-in #{:foo :bar :baz}))"
+  [allowed-keys & {:keys [unknown-message]
+                   :or {unknown-message "unknown key"}}]
+  {:pre [(set? allowed-keys)]}
+  (fn [m]
+    (let [map-keys (set (keys m))
+          ;; Remove all allowed keys from map keys and if there are
+          ;; any left over then that's a problem.
+          invalid-keys (cs/difference map-keys allowed-keys)]
+      (if (empty? invalid-keys)
+        [true {}]
+        [false (reduce (fn [m key] (assoc m key #{unknown-message}))
+                       {}
+                       invalid-keys)]))))
 
 
 

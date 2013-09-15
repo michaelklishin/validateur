@@ -234,6 +234,23 @@
                    #{[:acceptance invalid :terms-and-conditions
                       [acceptance-values]]}}]
            (v invalid )))))
+
+;;
+;; all-keys-in
+;;
+
+(deftest test-allowed-keys-validator
+  (let [allowed-keys #{:foo "bar" 123}
+        v (all-keys-in allowed-keys)]
+    (is (fn? v))
+    (is (= [true {}] (v {:foo "foo"})))
+    (is (= [true {}] (v {"bar" :bar})))
+    (is (= [true {}] (v {123 123})))
+    (is (= [true {}] (v {:foo 1, "bar" 2, 123 456})))
+    (is (= [false {:spam #{"unknown key"}}] (v {:spam "eggs"})))
+    (is (= [false {789 #{"unknown key"}}] (v {789 3.14})))
+    (is (= [false {"biz" #{"unknown key"}}] (v {"biz" "baz"})))))
+
 ;;
 ;; inclusion-of
 ;;
