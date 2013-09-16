@@ -240,16 +240,16 @@
 ;;
 
 (deftest test-allowed-keys-validator
-  (let [allowed-keys #{:foo "bar" 123}
+  (let [allowed-keys #{:turing "von neumann" 1954}
         v (all-keys-in allowed-keys)]
     (is (fn? v))
-    (is (= [true {}] (v {:foo "foo"})))
-    (is (= [true {}] (v {"bar" :bar})))
-    (is (= [true {}] (v {123 123})))
-    (is (= [true {}] (v {:foo 1, "bar" 2, 123 456})))
-    (is (= [false {:spam #{"unknown key"}}] (v {:spam "eggs"})))
-    (is (= [false {789 #{"unknown key"}}] (v {789 3.14})))
-    (is (= [false {"biz" #{"unknown key"}}] (v {"biz" "baz"})))))
+    (is (= [true {}] (v {:turing "top"})))
+    (is (= [true {}] (v {"von neumann" :von-neumann})))
+    (is (= [true {}] (v {1954 1954})))
+    (is (= [true {}] (v {:turing 1, "von neumann" 2, 1954 4591})))
+    (is (= [false {:babbage #{"unknown key"}}] (v {:babbage "lovelace"})))
+    (is (= [false {4591 #{"unknown key"}}] (v {4591 6.28})))
+    (is (= [false {"church" #{"unknown key"}}] (v {"church" "none"})))))
 
 ;;
 ;; inclusion-of

@@ -194,7 +194,7 @@ functions, validation results are returned as values."}
    Used in conjunction with validation-set:
 
    (validation-set
-     (all-keys-in #{:foo :bar :baz}))"
+     (all-keys-in #{:church :turing :gödel}))"
   [allowed-keys & {:keys [unknown-message]
                    :or {unknown-message "unknown key"}}]
   {:pre [(set? allowed-keys)]}
