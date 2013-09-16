@@ -234,6 +234,23 @@
                    #{[:acceptance invalid :terms-and-conditions
                       [acceptance-values]]}}]
            (v invalid )))))
+
+;;
+;; all-keys-in
+;;
+
+(deftest test-allowed-keys-validator
+  (let [allowed-keys #{:turing "von neumann" 1954}
+        v (all-keys-in allowed-keys)]
+    (is (fn? v))
+    (is (= [true {}] (v {:turing "top"})))
+    (is (= [true {}] (v {"von neumann" :von-neumann})))
+    (is (= [true {}] (v {1954 1954})))
+    (is (= [true {}] (v {:turing 1, "von neumann" 2, 1954 4591})))
+    (is (= [false {:babbage #{"unknown key"}}] (v {:babbage "lovelace"})))
+    (is (= [false {4591 #{"unknown key"}}] (v {4591 6.28})))
+    (is (= [false {"church" #{"unknown key"}}] (v {"church" "none"})))))
+
 ;;
 ;; inclusion-of
 ;;
