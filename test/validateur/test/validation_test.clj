@@ -313,6 +313,15 @@
                              [#{"trance", "dnb"}]]}}]
            (v { :genre "1" })))))
 
+(deftest test-inclusion-validation-with-allow-nil-true
+  (let [v (inclusion-of :genre :in #{"trance" "dnb"} :allow-nil true)]
+    (is (fn? v))
+    (is (= [true {}] (v {:genre "trance"})))
+    (is (= [true {}] (v {:genre "dnb"})))
+    (is (= [false {:genre #{"must be one of: trance, dnb"}}] (v {:genre "hiphop"})))
+    (is (= [true {}] (v {:category "trance"})))
+    (is (= [true {}] (v {:genre nil})))))
+
 ;;
 ;; exclusion-of
 ;;
