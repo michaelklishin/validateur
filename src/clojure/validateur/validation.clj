@@ -243,8 +243,10 @@ functions, validation results are returned as values."}
                           (str message (clojure.string/join ", " in))))]
     (fn [m]
       (let [v (f m attribute)]
-        (if (and (nil? v) (not allow-nil))
-          [false {attribute #{(blank-msg-fn m)}}]
+        (if (nil? v) 
+          (if allow-nil
+            [true {}]
+            [false {attribute #{(blank-msg-fn m)}}])
           (if (in v)
             [true {}]
             [false {attribute #{(msg-fn m)}}]))))))
