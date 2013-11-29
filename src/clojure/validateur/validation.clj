@@ -1,7 +1,7 @@
-(ns ^{:doc "Validateur is a validation library inspired by Ruby's ActiveModel.
-Validateur is functional: validators are functions, validation sets are higher-order
-functions, validation results are returned as values."}
-  validateur.validation
+(ns validateur.validation
+  "Validateur is a validation library inspired by Ruby's ActiveModel.
+   Validateur is functional: validators are functions, validation sets are higher-order
+   functions, validation results are returned as values."
   (:require clojure.string
             [clojure.set :as cs]
             [clojurewerkz.support.core :refer [assoc-with]]))
