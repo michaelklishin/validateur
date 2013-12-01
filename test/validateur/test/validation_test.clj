@@ -1,6 +1,6 @@
 (ns validateur.test.validation-test
-  (:use [clojure.test]
-        [validateur.validation]))
+  (:require [clojure.test :refer :all]
+            [validateur.validation :refer :all]))
 
 (println (str "Using Clojure version " *clojure-version*))
 
