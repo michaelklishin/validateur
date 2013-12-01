@@ -1,3 +1,11 @@
+## Changes between Validateur 1.5.0 and 1.6.0
+
+### Clojure 1.3 No Longer Supported
+
+Clojure 1.3 is no longer supported by Validateur.
+
+
+
 ## Changes between Validateur 1.4.0 and 1.5.0
 
 ### Optional messages in built-in validators
