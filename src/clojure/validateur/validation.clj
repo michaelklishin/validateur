@@ -25,12 +25,12 @@
 (defn- not-allowed-to-be-blank?
   [v ^Boolean allow-nil ^Boolean allow-blank]
   (or (and (nil? v)                  (not allow-nil))
-      (and (clojure.string/blank? v) (not allow-blank))))
+      (and (not (nil? v)) (clojure.string/blank? v) (not allow-blank))))
 
 (defn- allowed-to-be-blank?
   [v ^Boolean allow-nil ^Boolean allow-blank]
   (or (and (nil? v)                  allow-nil)
-      (and (clojure.string/blank? v) allow-blank)))
+      (and (not (nil? v)) (clojure.string/blank? v) allow-blank)))
 
 
 (defn- equal-length-of
