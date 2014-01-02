@@ -6,7 +6,7 @@ functions, validation sets are higher-order functions, validation results are re
 
 ## Supported Clojure versions
 
-Validateur is built from the ground up for Clojure 1.3 and up.
+Validateur requires Clojure 1.4+.
 
 
 
