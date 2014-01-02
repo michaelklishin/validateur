@@ -384,10 +384,30 @@
     (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "melodic power metal" })))))
 
 (deftest test-length-validator-with-fixed-length-that-allows-blanks
+  (let [v (length-of :title :is 11 :allow-blank true)]
+    (is (fn? v))
+    (is (= [false { :title #{"can't be blank"} }]             (v { :title nil })))
+    (is (= [true {}]                                          (v { :title "" })))
+    (is (= [true {}]                                          (v { :title "power metal" })))
+    (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "trance" })))
+    (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "dnb" })))
+    (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "melodic power metal" })))))
+
+(deftest test-length-validator-with-fixed-length-that-allows-nil
+  (let [v (length-of :title :is 11 :allow-nil true)]
+    (is (fn? v))
+    (is (= [true {}]                                          (v { :title nil })))
+    (is (= [false { :title #{"can't be blank"} }]             (v { :title "" })))
+    (is (= [true {}]                                          (v { :title "power metal" })))
+    (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "trance" })))
+    (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "dnb" })))
+    (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "melodic power metal" })))))
+
+(deftest test-length-validator-with-fixed-length-that-allows-blanks-and-nil
   (let [v (length-of :title :is 11 :allow-blank true :allow-nil true)]
     (is (fn? v))
-    (is (= [true {}] (v { :title nil })))
-    (is (= [true {}] (v { :title "" })))
+    (is (= [true {}]                                          (v { :title nil })))
+    (is (= [true {}]                                          (v { :title "" })))
     (is (= [true {}]                                          (v { :title "power metal" })))
     (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "trance" })))
     (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "dnb" })))
@@ -430,11 +450,31 @@
            (v { :title "power metal" })))))
 
 (deftest test-length-validator-with-range-length-that-allows-blanks
-  (let [v (length-of :title :within (range 9 13) :allow-nil true :allow-blank true)]
+  (let [v (length-of :title :within (range 9 13) :allow-blank true)]
     (is (fn? v))
-    (is (= [true {}] (v { :title nil })))
-    (is (= [true {}] (v { :title "" })))
-    (is (= [true {}]                                          (v { :title "power metal" })))
+    (is (= [false { :title #{"can't be blank"} }]                       (v { :title nil })))
+    (is (= [true {}]                                                    (v { :title "" })))
+    (is (= [true {}]                                                    (v { :title "power metal" })))
+    (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "trance" })))
+    (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "dnb" })))
+    (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "melodic power metal" })))))
+
+(deftest test-length-validator-with-range-length-that-allows-nil
+  (let [v (length-of :title :within (range 9 13) :allow-nil true)]
+    (is (fn? v))
+    (is (= [true {}]                                                    (v { :title nil })))
+    (is (= [false { :title #{"can't be blank"} }]                       (v { :title "" })))
+    (is (= [true {}]                                                    (v { :title "power metal" })))
+    (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "trance" })))
+    (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "dnb" })))
+    (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "melodic power metal" })))))
+
+(deftest test-length-validator-with-range-length-that-allows-blanks-and-nil
+  (let [v (length-of :title :within (range 9 13) :allow-blank true :allow-nil true)]
+    (is (fn? v))
+    (is (= [true {}]                                                    (v { :title nil })))
+    (is (= [true {}]                                                    (v { :title "" })))
+    (is (= [true {}]                                                    (v { :title "power metal" })))
     (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "trance" })))
     (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "dnb" })))
     (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "melodic power metal" })))))
@@ -464,6 +504,20 @@
 (deftest test-format-of-validator-that-allows-blanks
   (let [v (format-of :id :format #"abc-\d\d\d" :allow-blank true)]
     (is (= [false { :id #{"can't be blank"} }]       (v { :id nil })))
+    (is (= [true {}]                                 (v { :id "" })))
+    (is (= [true {}]                                 (v { :id "abc-123" })))
+    (is (= [false { :id #{"has incorrect format"} }] (v { :id "123-abc" })))))
+
+(deftest test-format-of-validator-that-allows-nil
+  (let [v (format-of :id :format #"abc-\d\d\d" :allow-nil true)]
+    (is (= [true {}]                                 (v { :id nil })))
+    (is (= [false { :id #{"can't be blank"} }]       (v { :id "" })))
+    (is (= [true {}]                                 (v { :id "abc-123" })))
+    (is (= [false { :id #{"has incorrect format"} }] (v { :id "123-abc" })))))
+
+(deftest test-format-of-validator-that-allows-blanks-and-nil
+  (let [v (format-of :id :format #"abc-\d\d\d" :allow-blank true :allow-nil true)]
+    (is (= [true {}]                                 (v { :id nil })))
     (is (= [true {}]                                 (v { :id "" })))
     (is (= [true {}]                                 (v { :id "abc-123" })))
     (is (= [false { :id #{"has incorrect format"} }] (v { :id "123-abc" })))))
