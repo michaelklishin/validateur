@@ -4,7 +4,7 @@
   :url "http://clojurevalidations.info"
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure  "1.5.1"]
-                 [clojurewerkz/support "0.14.0"]]
+                 [clojurewerkz/support "0.20.0"]]
   :profiles {:1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}
              :master {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}
