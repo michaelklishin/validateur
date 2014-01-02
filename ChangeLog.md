@@ -1,5 +1,13 @@
 ## Changes between Validateur 1.5.0 and 1.6.0
 
+### Corrected logic in blank/nil validations
+
+Corrected the logic in the allowed-to-be-blank functions to properly allow nil values
+when allow-nil is true, but allow-blank is false. Previously, both allow-blank and allow-nil
+had to be set to true to allow nil values due to clojure's blank? function returning true for nil.
+
+Contributed by Wes Johnson.
+
 ### Clojure 1.3 No Longer Supported
 
 Clojure 1.3 is no longer supported by Validateur.
