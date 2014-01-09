@@ -1,12 +1,12 @@
-# Validateur, a Clojure Validation Library
+# Validateur, a Clojure(Script) Validation Library
 
-Validateur is a [Clojure validation library](http://clojurevalidations.info) inspired by Ruby's ActiveModel. Validateur is functional: validators are
+Validateur is a [Clojure(Script) validation library](http://clojurevalidations.info) inspired by Ruby's ActiveModel. Validateur is functional: validators are
 functions, validation sets are higher-order functions, validation results are returned as values.
 
 
 ## Supported Clojure versions
 
-Validateur requires Clojure 1.4+.
+Validateur requires Clojure 1.4+/ClojureScript 0.0-2138+.
 
 
 
@@ -45,7 +45,7 @@ Our test suite has usage examples for each validator, built-in validation functi
 Validateur uses [Leiningen 2](https://github.com/technomancy/leiningen/blob/master/doc/TUTORIAL.md). Make
 sure you have it installed and then run tests against all supported Clojure versions using
 
-    lein2 all test
+    lein2 do clean, cljx once, all test, cljsbuild test
 
 Then create a branch and make your changes on it. Once you are done with your changes and all
 tests pass, submit a pull request on Github.
@@ -59,4 +59,3 @@ Distributed under the Eclipse Public License, the same as Clojure.
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/michaelklishin/validateur/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-

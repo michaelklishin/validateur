@@ -4,7 +4,7 @@
    functions, validation results are returned as values."
   (:require clojure.string
             [clojure.set :as cs]
-            [clojurewerkz.support.core :refer [assoc-with]]))
+            [clojurewerkz.support.core :as sp]))
 
 
 ;;
@@ -81,7 +81,7 @@
         [(empty? errors) errors]))))
 
 (def ^{:private true}
-  assoc-with-union (partial assoc-with cs/union))
+  assoc-with-union (partial sp/assoc-with cs/union))
 
 (defn numericality-of
   "Returns a function that, when given a map, will validate that the value of the attribute in that map is numerical.
@@ -243,7 +243,7 @@
                           (str message (clojure.string/join ", " in))))]
     (fn [m]
       (let [v (f m attribute)]
-        (if (nil? v) 
+        (if (nil? v)
           (if allow-nil
             [true {}]
             [false {attribute #{(blank-msg-fn m)}}])
