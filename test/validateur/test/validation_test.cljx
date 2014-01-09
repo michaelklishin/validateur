@@ -1,8 +1,10 @@
 (ns validateur.test.validation-test
-  (:require [clojure.test :refer :all]
-            [validateur.validation :refer :all]))
+  (:require [validateur.validation :as vr]
+            #+clj [clojure.test :refer :all]
+            #+cljs [cemerick.cljs.test :as t])
+  #+cljs (:require-macros [cemerick.cljs.test :refer (is deftest testing)]))
 
-(println (str "Using Clojure version " *clojure-version*))
+#+clj (println (str "Using Clojure version " *clojure-version*))
 
 (defn test-message-fn [type map attr & args]
   [type map attr args])
@@ -12,18 +14,18 @@
 
 
 (deftest presence-validation-using-set
-  (let [v (validation-set
-           (presence-of :name) (presence-of :age))]
-    (is (valid? v { :name "Joe", :age 28 }))
-    (is (not (invalid? v { :name "Joe", :age 28 })))
-    (is (not (valid? v { :name "Joe" })))
-    (is (invalid? v { :name "Joe" :age nil }))
-    (is (invalid? v { :name "Joe" :age "" }))
-    (is (invalid? v { :name "Joe" :age "   " }))
-    (is (not (invalid? v { :name "Joe" :age " a " })))
-    (is (invalid? v { :name "Joe" }))
-    (is (not (valid? v { :age 30 })))
-    (is (invalid? v { :age 30 }))
+  (let [v (vr/validation-set
+           (vr/presence-of :name) (vr/presence-of :age))]
+    (is (vr/valid? v { :name "Joe", :age 28 }))
+    (is (not (vr/invalid? v { :name "Joe", :age 28 })))
+    (is (not (vr/valid? v { :name "Joe" })))
+    (is (vr/invalid? v { :name "Joe" :age nil }))
+    (is (vr/invalid? v { :name "Joe" :age "" }))
+    (is (vr/invalid? v { :name "Joe" :age "   " }))
+    (is (not (vr/invalid? v { :name "Joe" :age " a " })))
+    (is (vr/invalid? v { :name "Joe" }))
+    (is (not (vr/valid? v { :age 30 })))
+    (is (vr/invalid? v { :age 30 }))
     (is (= {:age #{ "can't be blank" }} (v { :name "Joe" })))
     (is (= {} (v { :name "Joe", :age 28 })))))
 
@@ -34,23 +36,23 @@
 ;;
 
 (deftest test-presence-validator-with-one-attribute
-  (let [v (presence-of :name)]
+  (let [v (vr/presence-of :name)]
     (is (fn? v))
     (is (= [true {}]                             (v { :name "Michael" })))
     (is (= [false { :name #{"can't be blank"} }] (v { :age 28 })))))
 
 (deftest test-presence-validator-with-one-nested-attribute
-  (let [v (presence-of [:address :street])]
+  (let [v (vr/presence-of [:address :street])]
     (is (fn? v))
     (is (= [true {}]                                          (v { :address { :street "Old Rd" } })))
     (is (= [false { [:address :street] #{"can't be blank"} }] (v { :address {} })))))
 
 (deftest test-presence-of-validator-with-custom-message
-  (let [v (presence-of :name :message "Низя, должно быть заполнено!")]
+  (let [v (vr/presence-of :name :message "Низя, должно быть заполнено!")]
     (is (= [false { :name #{"Низя, должно быть заполнено!"} }] (v { :age 28 })))))
 
 (deftest test-presence-of-validator-with-optional-message-fn
-  (let [v (presence-of :name :message-fn test-message-fn)]
+  (let [v (vr/presence-of :name :message-fn test-message-fn)]
     (is (= [false { :name #{[:blank {:age 28} :name nil]} }] (v { :age 28 })))))
 
 ;;
@@ -59,14 +61,14 @@
 
 
 (deftest test-numerical-integer-only-validator-with-one-attribute
-  (let [v (numericality-of :age :only-integer true)]
+  (let [v (vr/numericality-of :age :only-integer true)]
     (is (fn? v))
     (is (= [true {}]                                                       (v { :age 26 })))
     (is (= [false { :age #{"should be a number" "should be an integer"} }] (v { :age "Twenty six" })))
     (is (= [false { :age #{"should be an integer"} }]                      (v { :age 26.6 })))))
 
 (deftest ^:focus test-numerical-integer-only-validator-with-one-nested-attribute
-         (let [v (numericality-of [:profile :age] :only-integer true)]
+         (let [v (vr/numericality-of [:profile :age] :only-integer true)]
            (is (fn? v))
            (is (= [true {}]                                                                  (v { :profile { :age 26 }})))
            (is (= [false { [:profile :age] #{"should be a number" "should be an integer"} }] (v { :profile { :age "Twenty six" }})))
@@ -74,7 +76,7 @@
 
 
 (deftest test-numerical-validator-with-one-attribute-that-is-gt-than-a-value
-  (let [v (numericality-of :age :gt 40)]
+  (let [v (vr/numericality-of :age :gt 40)]
     (is (fn? v))
     (is (= [true {}] (v { :age 46 })))
     (is (= [false { :age #{"can't be blank"} }]            (v { :age nil })))
@@ -83,7 +85,7 @@
 
 
 (deftest test-numerical-validator-with-one-attribute-that-is-lt-than-a-value
-  (let [v (numericality-of :age :lt 40)]
+  (let [v (vr/numericality-of :age :lt 40)]
     (is (fn? v))
     (is (= [true {}] (v { :age 36 })))
     (is (= [false { :age #{"can't be blank"} }]         (v { :age nil })))
@@ -92,7 +94,7 @@
 
 
 (deftest test-numerical-validator-with-one-attribute-that-is-gte-than-a-value
-  (let [v (numericality-of :age :gte 40)]
+  (let [v (vr/numericality-of :age :gte 40)]
     (is (fn? v))
     (is (= [true {}] (v { :age 46 })))
     (is (= [true {}] (v { :age 40 })))
@@ -102,7 +104,7 @@
 
 
 (deftest test-numerical-validator-with-one-attribute-that-is-lte-than-a-value
-  (let [v (numericality-of :age :lte 40)]
+  (let [v (vr/numericality-of :age :lte 40)]
     (is (fn? v))
     (is (= [true {}] (v { :age 36 })))
     (is (= [true {}] (v { :age 40 })))
@@ -113,7 +115,7 @@
 
 
 (deftest test-numerical-validator-with-one-attribute-that-is-equal-to-a-value
-  (let [v (numericality-of :age :equal-to 40)]
+  (let [v (vr/numericality-of :age :equal-to 40)]
     (is (fn? v))
     (is (= [true {}]                                   (v { :age 40 })))
     (is (= [false { :age #{"can't be blank"} }]        (v { :age nil })))
@@ -124,7 +126,7 @@
 
 
 (deftest test-numerical-validator-with-one-attribute-that-is-odd
-  (let [v (numericality-of :age :odd true)]
+  (let [v (vr/numericality-of :age :odd true)]
     (is (fn? v))
     (is (= [true {}]                                (v { :age 41 })))
     (is (= [false { :age #{"can't be blank"} }]     (v { :age nil })))
@@ -133,7 +135,7 @@
 
 
 (deftest test-numerical-validator-with-one-attribute-that-is-even
-  (let [v (numericality-of :age :even true)]
+  (let [v (vr/numericality-of :age :even true)]
     (is (fn? v))
     (is (= [true {}]                                (v { :age 40 })))
     (is (= [false { :age #{"can't be blank"} }]     (v { :age nil })))
@@ -144,7 +146,7 @@
 (deftest test-numerical-validator-with-optional-messages
   (let [msgs {:number "number" :blank "blank"
               :only-integer "integer" :equal-to "equal to "}
-        v #(numericality-of :age %1 %2 :messages msgs)]
+        v #(vr/numericality-of :age %1 %2 :messages msgs)]
     (testing "only integers"
       (is (= [false { :age #{"number" "integer"} }]
              ((v :only-integer true) { :age "Twenty six" })))
@@ -162,7 +164,7 @@
              ((v :odd true) { :age 20 }))))))
 
 (deftest test-numerical-validator-with-optional-message-fn
-  (let [v #(numericality-of :age %1 %2 :message-fn test-message-fn)]
+  (let [v #(vr/numericality-of :age %1 %2 :message-fn test-message-fn)]
     (is (= [false {:age #{[:number {:age "26"} :age nil]
                           [:only-integer {:age "26"} :age nil]} }]
            ((v :only-integer true) {:age "26" })))
@@ -176,20 +178,20 @@
 ;;
 
 (deftest test-acceptance-validator-with-one-attribute
-  (let [v (acceptance-of :terms-and-conditions)]
+  (let [v (vr/acceptance-of :terms-and-conditions)]
     (is (fn? v))
     (is (= [true {}]                                               (v { :terms-and-conditions true })))
     (is (= [false { :terms-and-conditions #{"must be accepted"} }] (v { :terms-and-conditions "I do not approve it" })))))
 
 (deftest test-acceptance-validator-with-custom-message
-  (let [v (acceptance-of :terms-and-conditions :message "ZOMG")]
+  (let [v (vr/acceptance-of :terms-and-conditions :message "ZOMG")]
     (is (fn? v))
     (is (= [true {}]                                               (v { :terms-and-conditions true })))
     (is (= [false { :terms-and-conditions #{"ZOMG"} }] (v { :terms-and-conditions "I do not approve it" })))))
 
 
 (deftest test-acceptance-validator-with-one-attribute-and-custom-accepted-values-list
-  (let [v (acceptance-of :terms-and-conditions :accept #{"yes", "hell yes"})]
+  (let [v (vr/acceptance-of :terms-and-conditions :accept #{"yes", "hell yes"})]
     (is (fn? v))
     (is (= [true {}]                                               (v { :terms-and-conditions "yes" })))
     (is (= [true {}]                                               (v { :terms-and-conditions "hell yes" })))
@@ -199,7 +201,7 @@
     (is (= [false { :terms-and-conditions #{"must be accepted"} }] (v { :terms-and-conditions "jeez no" })))))
 
 (deftest test-acceptance-validator-with-custom-blank-message
-  (let [v (acceptance-of :terms-and-conditions :blank-message "ZOMG")]
+  (let [v (vr/acceptance-of :terms-and-conditions :blank-message "ZOMG")]
     (is (fn? v))
     (is (= [true {}]
            (v { :terms-and-conditions true })))
@@ -207,7 +209,7 @@
            (v { :terms-and-conditions nil })))))
 
 (deftest test-acceptance-validator-with-custom-message-fn
-  (let [v (acceptance-of :terms-and-conditions :message-fn test-message-fn)
+  (let [v (vr/acceptance-of :terms-and-conditions :message-fn test-message-fn)
         valid { :terms-and-conditions true}
         invalid { :terms-and-conditions "I do not approve it"}
         invalid-blank { :terms-and-conditions nil}
@@ -224,7 +226,7 @@
 
 (deftest test-acceptance-validator-with-custom-accepted-values-and-message-fn
   (let [acceptance-values #{"yes" "hell yes"}
-        v (acceptance-of :terms-and-conditions :message-fn test-message-fn
+        v (vr/acceptance-of :terms-and-conditions :message-fn test-message-fn
                          :accept acceptance-values)
         valid { :terms-and-conditions "hell yes"}
         invalid { :terms-and-conditions "I do not approve it"}]
@@ -241,7 +243,7 @@
 
 (deftest test-allowed-keys-validator
   (let [allowed-keys #{:turing "von neumann" 1954}
-        v (all-keys-in allowed-keys)]
+        v (vr/all-keys-in allowed-keys)]
     (is (fn? v))
     (is (= [true {}] (v {:turing "top"})))
     (is (= [true {}] (v {"von neumann" :von-neumann})))
@@ -256,7 +258,7 @@
 ;;
 
 (deftest test-inclusion-validator
-  (let [v (inclusion-of :genre :in #{"trance", "dnb"})]
+  (let [v (vr/inclusion-of :genre :in #{"trance", "dnb"})]
     (is (fn? v))
     (is (= [false { :genre #{"can't be blank"} }]              (v { :genre nil })))
     (is (= [true {}]                                           (v { :genre "trance" })))
@@ -266,7 +268,7 @@
     (is (= [false { :genre #{"must be one of: trance, dnb"} }] (v { :genre "1" })))))
 
 (deftest test-inclusion-validator-with-nested-attributes
-  (let [v (inclusion-of [:track :genre] :in #{"trance", "dnb"})]
+  (let [v (vr/inclusion-of [:track :genre] :in #{"trance", "dnb"})]
     (is (fn? v))
     (is (= [false { [:track :genre] #{"can't be blank"} }]     (v { [:track :genre] nil })))
     (is (= [true {}]                                           (v { :track {:genre "trance" }})))
@@ -276,7 +278,7 @@
     (is (= [false { [:track :genre] #{"must be one of: trance, dnb"} }] (v {:track {:genre "1" }})))))
 
 (deftest test-inclusion-validator-with-custom-message
-  (let [v (inclusion-of :genre :in #{"trance", "dnb"}
+  (let [v (vr/inclusion-of :genre :in #{"trance", "dnb"}
                         :message "one of: ")]
     (is (fn? v))
     (is (= [false { :genre #{"one of: trance, dnb"} }]
@@ -285,7 +287,7 @@
            (v { :genre "trance" })))))
 
 (deftest test-inclusion-validator-with-custom-blank-message
-  (let [v (inclusion-of :genre :in #{"trance", "dnb"}
+  (let [v (vr/inclusion-of :genre :in #{"trance", "dnb"}
                         :blank-message "test")]
     (is (fn? v))
     (is (= [false { :genre #{"test"} }]
@@ -294,7 +296,7 @@
            (v { :genre "trance" })))))
 
 (deftest test-inclusion-validator-with-optional-message-fn
-  (let [v (inclusion-of :genre :in #{"trance", "dnb"}
+  (let [v (vr/inclusion-of :genre :in #{"trance", "dnb"}
                         :message-fn test-message-fn)]
     (is (fn? v))
     (is (= [false {:genre #{[:blank {:genre nil} :genre nil]}}]
@@ -314,7 +316,7 @@
            (v { :genre "1" })))))
 
 (deftest test-inclusion-validation-with-allow-nil-true
-  (let [v (inclusion-of :genre :in #{"trance" "dnb"} :allow-nil true)]
+  (let [v (vr/inclusion-of :genre :in #{"trance" "dnb"} :allow-nil true)]
     (is (fn? v))
     (is (= [true {}] (v {:genre "trance"})))
     (is (= [true {}] (v {:genre "dnb"})))
@@ -327,7 +329,7 @@
 ;;
 
 (deftest test-exclusion-validator
-  (let [v (exclusion-of :genre :in #{"trance", "dnb"})]
+  (let [v (vr/exclusion-of :genre :in #{"trance", "dnb"})]
     (is (fn? v))
     (is (= [false { :genre #{"can't be blank"} }]                  (v { :genre nil })))
     (is (= [true {}]                                               (v { :genre "rock" })))
@@ -336,7 +338,7 @@
     (is (= [false { :genre #{"must not be one of: trance, dnb"} }] (v { :genre "dnb" })))))
 
 (deftest test-exclusion-validator-with-custom-message
-  (let [v (exclusion-of :genre :in #{"trance", "dnb"}
+  (let [v (vr/exclusion-of :genre :in #{"trance", "dnb"}
                         :message "not one of: ")]
     (is (fn? v))
     (is (= [false { :genre #{"not one of: trance, dnb"} }]
@@ -345,7 +347,7 @@
            (v { :genre "swing" })))))
 
 (deftest test-exclusion-validator-with-custom-blank-message
-  (let [v (exclusion-of :genre :in #{"trance", "dnb"}
+  (let [v (vr/exclusion-of :genre :in #{"trance", "dnb"}
                         :blank-message "test")]
     (is (fn? v))
     (is (= [false { :genre #{"test"} }]
@@ -354,7 +356,7 @@
            (v { :genre "swing" })))))
 
 (deftest test-exclusion-validator-with-optional-message-fn
-  (let [v (exclusion-of :genre :in #{"trance", "dnb"}
+  (let [v (vr/exclusion-of :genre :in #{"trance", "dnb"}
                         :message-fn test-message-fn)]
     (is (fn? v))
     (is (= [false { :genre #{[:blank {:genre nil} :genre nil]} }]
@@ -375,7 +377,7 @@
 ;;
 
 (deftest test-length-validator-with-fixed-length
-  (let [v (length-of :title :is 11)]
+  (let [v (vr/length-of :title :is 11)]
     (is (fn? v))
     (is (= [false { :title #{"can't be blank"} }]             (v { :title nil })))
     (is (= [true {}]                                          (v { :title "power metal" })))
@@ -384,7 +386,7 @@
     (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "melodic power metal" })))))
 
 (deftest test-length-validator-with-fixed-length-that-allows-blanks
-  (let [v (length-of :title :is 11 :allow-blank true)]
+  (let [v (vr/length-of :title :is 11 :allow-blank true)]
     (is (fn? v))
     (is (= [false { :title #{"can't be blank"} }]             (v { :title nil })))
     (is (= [true {}]                                          (v { :title "" })))
@@ -394,7 +396,7 @@
     (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "melodic power metal" })))))
 
 (deftest test-length-validator-with-fixed-length-that-allows-nil
-  (let [v (length-of :title :is 11 :allow-nil true)]
+  (let [v (vr/length-of :title :is 11 :allow-nil true)]
     (is (fn? v))
     (is (= [true {}]                                          (v { :title nil })))
     (is (= [false { :title #{"can't be blank"} }]             (v { :title "" })))
@@ -404,7 +406,7 @@
     (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "melodic power metal" })))))
 
 (deftest test-length-validator-with-fixed-length-that-allows-blanks-and-nil
-  (let [v (length-of :title :is 11 :allow-blank true :allow-nil true)]
+  (let [v (vr/length-of :title :is 11 :allow-blank true :allow-nil true)]
     (is (fn? v))
     (is (= [true {}]                                          (v { :title nil })))
     (is (= [true {}]                                          (v { :title "" })))
@@ -414,7 +416,7 @@
     (is (= [false { :title #{"must be 11 characters long"} }] (v { :title "melodic power metal" })))))
 
 (deftest test-length-validator-with-fixed-length-with-optional-blank-message
-  (let [v (length-of :title :is 11 :blank-message "test blank")]
+  (let [v (vr/length-of :title :is 11 :blank-message "test blank")]
     (is (fn? v))
     (is (= [false { :title #{"test blank"} }]
            (v { :title nil })))
@@ -422,7 +424,7 @@
            (v { :title "power metal" })))))
 
 (deftest test-length-validator-with-fixed-length-with-optional-message-fn
-  (let [v (length-of :title :is 11 :message-fn test-message-fn)]
+  (let [v (vr/length-of :title :is 11 :message-fn test-message-fn)]
     (is (fn? v))
     (is (= [false {:title #{[:blank {:title nil} :title nil]}}]
            (v { :title nil })))
@@ -433,7 +435,7 @@
 
 
 (deftest test-length-validator-with-range-length
-  (let [v (length-of :title :within (range 9 13))]
+  (let [v (vr/length-of :title :within (range 9 13))]
     (is (fn? v))
     (is (= [false { :title #{"can't be blank"} }]             (v { :title nil })))
     (is (= [true {}]                                          (v { :title "power metal" })))
@@ -442,7 +444,7 @@
     (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "melodic power metal" })))))
 
 (deftest test-length-validator-with-range-length-with-optional-blank-message
-  (let [v (length-of :title :within (range 9 13) :blank-message "test blank")]
+  (let [v (vr/length-of :title :within (range 9 13) :blank-message "test blank")]
     (is (fn? v))
     (is (= [false { :title #{"test blank"} }]
            (v { :title nil })))
@@ -450,7 +452,7 @@
            (v { :title "power metal" })))))
 
 (deftest test-length-validator-with-range-length-that-allows-blanks
-  (let [v (length-of :title :within (range 9 13) :allow-blank true)]
+  (let [v (vr/length-of :title :within (range 9 13) :allow-blank true)]
     (is (fn? v))
     (is (= [false { :title #{"can't be blank"} }]                       (v { :title nil })))
     (is (= [true {}]                                                    (v { :title "" })))
@@ -460,7 +462,7 @@
     (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "melodic power metal" })))))
 
 (deftest test-length-validator-with-range-length-that-allows-nil
-  (let [v (length-of :title :within (range 9 13) :allow-nil true)]
+  (let [v (vr/length-of :title :within (range 9 13) :allow-nil true)]
     (is (fn? v))
     (is (= [true {}]                                                    (v { :title nil })))
     (is (= [false { :title #{"can't be blank"} }]                       (v { :title "" })))
@@ -470,7 +472,7 @@
     (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "melodic power metal" })))))
 
 (deftest test-length-validator-with-range-length-that-allows-blanks-and-nil
-  (let [v (length-of :title :within (range 9 13) :allow-blank true :allow-nil true)]
+  (let [v (vr/length-of :title :within (range 9 13) :allow-blank true :allow-nil true)]
     (is (fn? v))
     (is (= [true {}]                                                    (v { :title nil })))
     (is (= [true {}]                                                    (v { :title "" })))
@@ -480,7 +482,7 @@
     (is (= [false { :title #{"must be from 9 to 12 characters long"} }] (v { :title "melodic power metal" })))))
 
 (deftest test-length-validator-with-range-length-with-optional-message-fn
-  (let [v (length-of :title :within (range 9 13) :message-fn test-message-fn)]
+  (let [v (vr/length-of :title :within (range 9 13) :message-fn test-message-fn)]
     (is (fn? v))
     (is (= [false { :title #{[:blank {:title nil} :title nil]} }]
            (v { :title nil })))
@@ -494,7 +496,7 @@
 ;;
 
 (deftest test-format-of-validator
-  (let [v (format-of :id :format #"abc-\d\d\d")]
+  (let [v (vr/format-of :id :format #"abc-\d\d\d")]
     (is (fn? v))
     (is (= [false { :id #{"can't be blank"} }]       (v { :id nil })))
     (is (= [true {}]                                 (v { :id "abc-123" })))
@@ -502,39 +504,39 @@
 
 
 (deftest test-format-of-validator-that-allows-blanks
-  (let [v (format-of :id :format #"abc-\d\d\d" :allow-blank true)]
+  (let [v (vr/format-of :id :format #"abc-\d\d\d" :allow-blank true)]
     (is (= [false { :id #{"can't be blank"} }]       (v { :id nil })))
     (is (= [true {}]                                 (v { :id "" })))
     (is (= [true {}]                                 (v { :id "abc-123" })))
     (is (= [false { :id #{"has incorrect format"} }] (v { :id "123-abc" })))))
 
 (deftest test-format-of-validator-that-allows-nil
-  (let [v (format-of :id :format #"abc-\d\d\d" :allow-nil true)]
+  (let [v (vr/format-of :id :format #"abc-\d\d\d" :allow-nil true)]
     (is (= [true {}]                                 (v { :id nil })))
     (is (= [false { :id #{"can't be blank"} }]       (v { :id "" })))
     (is (= [true {}]                                 (v { :id "abc-123" })))
     (is (= [false { :id #{"has incorrect format"} }] (v { :id "123-abc" })))))
 
 (deftest test-format-of-validator-that-allows-blanks-and-nil
-  (let [v (format-of :id :format #"abc-\d\d\d" :allow-blank true :allow-nil true)]
+  (let [v (vr/format-of :id :format #"abc-\d\d\d" :allow-blank true :allow-nil true)]
     (is (= [true {}]                                 (v { :id nil })))
     (is (= [true {}]                                 (v { :id "" })))
     (is (= [true {}]                                 (v { :id "abc-123" })))
     (is (= [false { :id #{"has incorrect format"} }] (v { :id "123-abc" })))))
 
 (deftest test-format-of-validator-with-optional-blank-message
-  (let [v (format-of :id :format #"abc-\d\d\d" :blank-message "test blank")]
+  (let [v (vr/format-of :id :format #"abc-\d\d\d" :blank-message "test blank")]
     (is (fn? v))
     (is (= [false { :id #{"test blank"} }]           (v { :id nil })))
     (is (= [true {}]                                 (v { :id "abc-123" })))))
 
 (deftest test-format-of-validator-with-custom-message
-  (let [v (format-of :id :format #"abc-\d\d\d" :message "is improperly formatted")]
+  (let [v (vr/format-of :id :format #"abc-\d\d\d" :message "is improperly formatted")]
     (is (= [false { :id #{"is improperly formatted"} }] (v { :id "123-abc" })))))
 
 (deftest test-format-of-validator-with-optional-message-fn
   (let [test-message-equals-regexp (fn [t m attr & args] [t m attr (map str args)])
-        v (format-of :id :format #"abc-\d\d\d" :message-fn test-message-equals-regexp)]
+        v (vr/format-of :id :format #"abc-\d\d\d" :message-fn test-message-equals-regexp)]
     (is (fn? v))
     (is (= [false { :id #{[:blank {:id nil} :id []]} }]
            (v { :id nil })))
@@ -550,7 +552,7 @@
 
 
 (deftest test-as-vec
-  (is (= [1 2 3] (as-vec [1 2 3])))
-  (is (= [1 2 3] (as-vec '(1 2 3))))
-  (is (= [10] (as-vec 10)))
-  (is (= [{ :a 1 :b 2 }] (as-vec { :a 1 :b 2 }))))
+  (is (= [1 2 3] (vr/as-vec [1 2 3])))
+  (is (= [1 2 3] (vr/as-vec '(1 2 3))))
+  (is (= [10] (vr/as-vec 10)))
+  (is (= [{ :a 1 :b 2 }] (vr/as-vec { :a 1 :b 2 }))))
