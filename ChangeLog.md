@@ -1,3 +1,12 @@
+## Changes between Validateur 1.6.0 and 1.7.0
+
+### ClojureScript Support
+
+Validateur now supports ClojureScript.
+
+Contributed by Konstantin Shabanov.
+
+
 ## Changes between Validateur 1.5.0 and 1.6.0
 
 ### Corrected logic in blank/nil validations
