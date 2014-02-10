@@ -17,6 +17,32 @@
   (let [v (vr/validation-set
            (vr/presence-of :name) (vr/presence-of :age))]
     (is (vr/valid? v { :name "Joe", :age 28 }))
+    (is (vr/valid? (v { :name "Joe", :age 28 })))
+    (is (not (vr/invalid? v { :name "Joe", :age 28 })))
+    (is (not (vr/valid? v { :name "Joe" })))
+    (is (not (vr/valid? (v { :name "Joe" }))))
+    (is (vr/invalid? v { :name "Joe" :age nil }))
+    (is (vr/invalid? v { :name "Joe" :age "" }))
+    (is (vr/invalid? v { :name "Joe" :age "   " }))
+    (is (not (vr/invalid? v { :name "Joe" :age " a " })))
+    (is (vr/invalid? v { :name "Joe" }))
+    (is (not (vr/valid? v { :age 30 })))
+    (is (vr/invalid? v { :age 30 }))
+    (is (= {:age #{ "can't be blank" }} (v { :name "Joe" })))
+    (is (= {} (v { :name "Joe", :age 28 })))))
+
+;;
+;; compose-set
+;;
+
+
+(deftest presence-compose-validation-set
+  (let [vn (vr/validation-set
+             (vr/presence-of :name))
+        va (vr/validation-set
+             (vr/presence-of :age))
+        v  (vr/compose-sets va vn)]
+    (is (vr/valid? v { :name "Joe", :age 28 }))
     (is (not (vr/invalid? v { :name "Joe", :age 28 })))
     (is (not (vr/valid? v { :name "Joe" })))
     (is (vr/invalid? v { :name "Joe" :age nil }))

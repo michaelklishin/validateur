@@ -414,9 +414,9 @@
   "Takes a validation set and a map.
 
    Returns true if validation returned no errors, false otherwise"
-  [vsm]
-  (empty? vsm)
-  [vs m]
-  (empty? (vs m)))
+  ([vsm]
+    (empty? vsm))
+  ([vs m]
+    (empty? (vs m))))
 
 (def invalid? (complement valid?))
