@@ -397,11 +397,26 @@
             {}
             validators)))
 
+(defn compose-sets [& fns]
+  "Takes a collection of validation-sets and returns a validaton-set function which applies
+   all given validation-set and merges the results.
+
+   Example:
+
+   (let [user (validation-set (presence-of :user))
+         pass (validation-set (presence-of :pass))
+         signup-form (validation-comp user pass)]
+     (valid? signup-form {:user \"rich\" :pass \"secret\"}))"
+  (fn [data]
+    (apply merge-with cs/union ((apply juxt fns) data))))
+
 (defn valid?
   "Takes a validation set and a map.
 
    Returns true if validation returned no errors, false otherwise"
-  [vs m]
-  (empty? (vs m)))
+  ([vsm]
+    (empty? vsm))
+  ([vs m]
+    (empty? (vs m))))
 
 (def invalid? (complement valid?))
