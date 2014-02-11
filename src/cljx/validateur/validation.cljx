@@ -397,7 +397,8 @@
             {}
             validators)))
 
-(defn compose-sets [& fns]
+(defn compose-sets
+  [& fns]
   "Takes a collection of validation-sets and returns a validaton-set function which applies
    all given validation-set and merges the results.
 
