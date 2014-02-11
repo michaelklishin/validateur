@@ -1,3 +1,23 @@
+## Changes Between 1.7.0 and 1.8.0
+
+## Validation Set Composition
+
+Validateur now supports composition of validation sets. To
+compose several sets, use `validateur.validation/compose-sets`:
+
+``` clojure
+(let [vn (vr/validation-set
+           (vr/presence-of :name))
+      va (vr/validation-set
+           (vr/presence-of :age))
+      v  (vr/compose-sets va vn)]
+  ;= true
+  (vr/valid? v { :name "Joe" :age 28 }))
+```
+
+Contributed by hura.
+
+
 ## Changes between Validateur 1.6.0 and 1.7.0
 
 ### ClojureScript Support
