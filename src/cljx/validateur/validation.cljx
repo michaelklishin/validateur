@@ -407,7 +407,6 @@
             validators)))
 
 (defn compose-sets
-  [& fns]
   "Takes a collection of validation-sets and returns a validaton-set function which applies
    all given validation-set and merges the results.
 
@@ -417,6 +416,7 @@
          pass (validation-set (presence-of :pass))
          signup-form (validation-comp user pass)]
      (valid? signup-form {:user \"rich\" :pass \"secret\"}))"
+  [& fns]
   (fn [data]
     (apply merge-with cs/union ((apply juxt fns) data))))
 
