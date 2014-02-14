@@ -3,8 +3,7 @@
   :license { :name "Eclipse Public License" }
   :url "http://clojurevalidations.info"
   :min-lein-version "2.0.0"
-  :dependencies [[org.clojure/clojure  "1.5.1"]
-                 [clojurewerkz/support "0.20.0"]]
+  :dependencies [[org.clojure/clojure  "1.5.1"]]
   :jar-exclusions [#"\.cljx"]
   :profiles {:1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}

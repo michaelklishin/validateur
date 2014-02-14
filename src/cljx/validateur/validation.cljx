@@ -12,8 +12,7 @@
    Validateur is functional: validators are functions, validation sets are higher-order
    functions, validation results are returned as values."
   (:require clojure.string
-            [clojure.set :as cs]
-            [clojurewerkz.support.core :as sp]))
+            [clojure.set :as cs]))
 
 
 ;;
@@ -89,8 +88,9 @@
             errors (if res {} {attribute #{msg}})]
         [(empty? errors) errors]))))
 
-(def ^{:private true}
-  assoc-with-union (partial sp/assoc-with cs/union))
+(defn ^{:private true} assoc-with-union
+  [m k v]
+  (assoc m k (apply cs/union [(get m k) v])))
 
 (defn numericality-of
   "Returns a function that, when given a map, will validate that the value of the attribute in that map is numerical.
@@ -407,7 +407,6 @@
             validators)))
 
 (defn compose-sets
-  [& fns]
   "Takes a collection of validation-sets and returns a validaton-set function which applies
    all given validation-set and merges the results.
 
@@ -417,6 +416,7 @@
          pass (validation-set (presence-of :pass))
          signup-form (validation-comp user pass)]
      (valid? signup-form {:user \"rich\" :pass \"secret\"}))"
+  [& fns]
   (fn [data]
     (apply merge-with cs/union ((apply juxt fns) data))))
 
