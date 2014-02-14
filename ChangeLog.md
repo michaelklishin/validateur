@@ -1,5 +1,12 @@
 ## Changes Between 1.7.0 and 1.8.0
 
+## ClojureWerkz Support Dependency Dropped
+
+ClojureWerkz Support is no longer a dependency of Validateur.
+This makes it easier to use Validateur in ClojureScript projects.
+
+Contributed by hura.
+
 ## Validation Set Composition
 
 Validateur now supports composition of validation sets. To
