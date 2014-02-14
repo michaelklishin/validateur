@@ -1,4 +1,4 @@
-## Changes Between 1.7.0 and 1.8.0
+## Changes Between 1.7.0 and 2.0.0
 
 ## ClojureWerkz Support Dependency Dropped
 
