@@ -414,7 +414,7 @@
 
    (let [user (validation-set (presence-of :user))
          pass (validation-set (presence-of :pass))
-         signup-form (validation-comp user pass)]
+         signup-form (compose-sets user pass)]
      (valid? signup-form {:user \"rich\" :pass \"secret\"}))"
   [& fns]
   (fn [data]
