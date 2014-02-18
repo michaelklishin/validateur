@@ -384,6 +384,42 @@
 
 
 
+(defn validate-when [predicate validator]
+  "Returns a function that, when given a map, will run the validator against that map if and
+  only if the predicate function returns true.  The predicate function will be given the same
+  map on which the validator may run.
+  
+  Example:
+  
+  (use 'validateur.validation)
+  
+  (validate-when #(contains? % :name) (presence-of :name))"
+  (fn [m]
+    (if (predicate m)
+      (validator m)
+      [true {}])))
+
+
+
+(defn validate-with-predicate [attribute predicate & {:keys [message] :or {message "is invalid"}}]
+  "Returns a function that, when given a map, will validate that the predicate returns
+  true when given the map.
+  
+  Accepted options:
+  
+  :message (default: \"is invalid\"): an error message for invalid values
+  
+  Example:
+  
+  (use 'validateur.validation)
+  
+  (validate-with-predicate :name #(contains? % :name))"
+  (fn [m]
+    (if (predicate m)
+      [true {}]
+      [false {attribute #{message}}])))
+
+
 
 (defn validation-set
   "Takes a collection of validators and returns a function that, when given a map, will run all

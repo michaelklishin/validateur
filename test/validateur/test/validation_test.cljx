@@ -571,6 +571,51 @@
     (is (= [false { :id #{[:format {:id "123-abc"} :id ["abc-\\d\\d\\d"]]} }]
            (v { :id "123-abc" })))))
 
+;;
+;; validate-when
+;;
+
+(deftest test-validate-when-predicate-returns-false
+  (let [v (vr/validate-when (constantly false) (vr/presence-of :id))]
+    (is (fn? v))
+    (is (= [true {}]
+           (v {})))))
+
+(deftest test-validate-when-predicate-returns-true
+  (let [v (vr/validate-when (constantly true) (vr/presence-of :id))]
+    (is (fn? v))
+    (is (= [false {:id #{"can't be blank"}}]
+           (v {})))))
+
+(deftest test-validate-when-is-given-map
+  (let [predicate (fn [m] (= (:id m) "abc-123"))
+        v (vr/validate-when predicate (vr/presence-of :nonexistent))]
+    (is (= [false {:nonexistent #{"can't be blank"}}]
+           (v {:id "abc-123"})))
+    (is (= [true {}]
+           (v {:id "123-abc"})))))
+
+;;
+;; validate-with-predicate
+;;
+
+(deftest test-validate-with-predicate-predicate-returns-false
+  (let [v (vr/validate-with-predicate :id (constantly false))]
+    (is (fn? v))
+    (is (= [false {:id #{"is invalid"}}]
+           (v {})))))
+
+(deftest test-validate-with-predicate-predicate-returns-true
+  (let [v (vr/validate-with-predicate :id (constantly true))]
+    (is (fn? v))
+    (is (= [true {}]
+           (v {})))))
+
+(deftest test-validate-with-predicate-predicate-returns-false-with-custom-message
+  (let [v (vr/validate-with-predicate :id (constantly false) :message "test")]
+    (is (= [false {:id #{"test"}}]
+           (v {})))))
+
 
 ;;
 ;; Implementation functions
