@@ -384,7 +384,8 @@
 
 
 
-(defn validate-when [predicate validator]
+(defn validate-when
+  [predicate validator]
   "Returns a function that, when given a map, will run the validator against that map if and
   only if the predicate function returns true.  The predicate function will be given the same
   map on which the validator may run.
@@ -401,7 +402,8 @@
 
 
 
-(defn validate-with-predicate [attribute predicate & {:keys [message] :or {message "is invalid"}}]
+(defn validate-with-predicate
+  [attribute predicate & {:keys [message] :or {message "is invalid"}}]
   "Returns a function that, when given a map, will validate that the predicate returns
   true when given the map.
   
