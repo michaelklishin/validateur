@@ -1,13 +1,59 @@
 ## Changes Between 1.7.0 and 2.0.0
 
-## ClojureWerkz Support Dependency Dropped
+### Validator Predicates (Guards)
+
+It is now possible to wrap a validator into a function
+that will check a condition before applying the validator.
+
+To do so, use `validate-when`:
+
+``` clojure
+(require '[validateur.validation])
+
+(defn new?
+  [user]
+  (nil? (:id user)))
+
+(defn unique-email?
+  [user]
+  (if-let [existing (find-by-email (:email user)]
+    (= (:id user) (:id existing))
+    true))
+
+(def validate
+  (validation-set
+    (presence-of :email)
+    (validate :email unique-email? :message "is already taken")
+    (validate-when new? (presence-of :password))
+    (validate-when #(contains? % :password) (presence-of :password))))
+```
+
+If provided predicate returns `false`, the validator it guards is not
+executed.
+
+[Contributed](https://github.com/michaelklishin/validateur/pull/23) by Scott Nelson.
+
+### Generic Validator
+
+Generic validator uses a predicate function and attaches errors to specified
+attribute:
+
+``` clojure
+(require '[validateur.validation])
+
+(validate-with-predicate :id unique? :message "ID is not unique")
+```
+
+[Contributed](https://github.com/michaelklishin/validateur/pull/23) by Scott Nelson.
+
+### ClojureWerkz Support Dependency Dropped
 
 ClojureWerkz Support is no longer a dependency of Validateur.
 This makes it easier to use Validateur in ClojureScript projects.
 
 Contributed by hura.
 
-## Validation Set Composition
+### Validation Set Composition
 
 Validateur now supports composition of validation sets. To
 compose several sets, use `validateur.validation/compose-sets`:
