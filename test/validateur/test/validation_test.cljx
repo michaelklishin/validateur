@@ -571,6 +571,30 @@
     (is (= [false { :id #{[:format {:id "123-abc"} :id ["abc-\\d\\d\\d"]]} }]
            (v { :id "123-abc" })))))
 
+;;
+;; validate-when
+;;
+
+(deftest test-validate-when-predicate-returns-false
+  (let [v (vr/validate-when (constantly false) (vr/presence-of :id))]
+    (is (fn? v))
+    (is (= [true {}]
+           (v {})))))
+
+(deftest test-validate-when-predicate-returns-true
+  (let [v (vr/validate-when (constantly true) (vr/presence-of :id))]
+    (is (fn? v))
+    (is (= [false {:id #{"can't be blank"}}]
+           (v {})))))
+
+(deftest test-validate-when-is-given-map
+  (let [predicate (fn [m] (= (:id m) "abc-123"))
+        v (vr/validate-when predicate (vr/presence-of :nonexistent))]
+    (is (= [false {:nonexistent #{"can't be blank"}}]
+           (v {:id "abc-123"})))
+    (is (= [true {}]
+           (v {:id "123-abc"})))))
+
 
 ;;
 ;; Implementation functions

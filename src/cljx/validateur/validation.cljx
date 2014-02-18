@@ -384,6 +384,22 @@
 
 
 
+(defn validate-when [predicate validator]
+  "Returns a function that, when given a map, will run the validator against that map if and
+  only if the predicate function returns true.  The predicate function will be given the same
+  map on which the validator may run.
+  
+  Example:
+  
+  (use 'validateur.validation)
+  
+  (validate-when #(contains? % :name) (presence-of :name))"
+  (fn [m]
+    (if (predicate m)
+      (validator m)
+      [true {}])))
+
+
 
 (defn validation-set
   "Takes a collection of validators and returns a function that, when given a map, will run all
