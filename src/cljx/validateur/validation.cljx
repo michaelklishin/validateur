@@ -71,7 +71,7 @@
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validation)
+   (require '[validateur.validation :refer :all])
 
    (validation-set
      (presence-of :name)
@@ -116,7 +116,7 @@
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validation)
+   (require '[validateur.validation :refer :all])
 
    (validation-set
      (presence-of :name)
@@ -171,7 +171,7 @@
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validation)
+   (require '[validateur.validation :refer :all])
 
    (validation-set
      (presence-of :name)
@@ -236,7 +236,7 @@
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validation)
+   (require '[validateur.validation :refer :all])
 
    (validation-set
      (presence-of :name)
@@ -277,7 +277,7 @@
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validation)
+   (require '[validateur.validation :refer :all])
 
    (validation-set
      (presence-of :name)
@@ -316,7 +316,7 @@
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validation)
+   (require '[validateur.validation :refer :all])
 
    (validation-set
      (presence-of :username)
@@ -355,7 +355,7 @@
 
    Used in conjunction with validation-set:
 
-   (use 'validateur.validation)
+   (require '[validateur.validation :refer :all])
 
    (validation-set
      (presence-of :name)
@@ -391,7 +391,7 @@
   
   Example:
   
-  (use 'validateur.validation)
+  (require '[validateur.validation :refer :all])
   
   (validate-when #(contains? % :name) (presence-of :name))"
   (fn [m]
@@ -411,7 +411,7 @@
   
   Example:
   
-  (use 'validateur.validation)
+  (require '[validateur.validation :refer :all])
   
   (validate-with-predicate :name #(contains? % :name))"
   (fn [m]
@@ -428,7 +428,7 @@
 
    Example:
 
-   (use 'validateur.validation)
+   (require '[validateur.validation :refer :all])
 
    (validation-set
      (presence-of :name)
