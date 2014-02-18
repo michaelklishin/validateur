@@ -595,6 +595,27 @@
     (is (= [true {}]
            (v {:id "123-abc"})))))
 
+;;
+;; validate
+;;
+
+(deftest test-validate-predicate-returns-false
+  (let [v (vr/validate :id (constantly false))]
+    (is (fn? v))
+    (is (= [false {:id #{"is invalid"}}]
+           (v {})))))
+
+(deftest test-validate-predicate-returns-true
+  (let [v (vr/validate :id (constantly true))]
+    (is (fn? v))
+    (is (= [true {}]
+           (v {})))))
+
+(deftest test-validate-predicate-returns-false-with-custom-message
+  (let [v (vr/validate :id (constantly false) :message "test")]
+    (is (= [false {:id #{"test"}}]
+           (v {})))))
+
 
 ;;
 ;; Implementation functions

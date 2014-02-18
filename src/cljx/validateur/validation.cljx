@@ -401,6 +401,26 @@
 
 
 
+(defn validate [attribute predicate & {:keys [message] :or {message "is invalid"}}]
+  "Returns a function that, when given a map, will validate that the predicate returns
+  true when given the map.
+  
+  Accepted options:
+  
+  :message (default: \"is invalid\"): an error message for invalid values
+  
+  Example:
+  
+  (use 'validateur.validation)
+  
+  (validate :name #(contains? % :name))"
+  (fn [m]
+    (if (predicate m)
+      [true {}]
+      [false {attribute #{message}}])))
+
+
+
 (defn validation-set
   "Takes a collection of validators and returns a function that, when given a map, will run all
    the validators against that map and collect all the error messages that are then returned
