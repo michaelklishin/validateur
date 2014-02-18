@@ -401,7 +401,7 @@
 
 
 
-(defn validate [attribute predicate & {:keys [message] :or {message "is invalid"}}]
+(defn validate-with-predicate [attribute predicate & {:keys [message] :or {message "is invalid"}}]
   "Returns a function that, when given a map, will validate that the predicate returns
   true when given the map.
   
@@ -413,7 +413,7 @@
   
   (use 'validateur.validation)
   
-  (validate :name #(contains? % :name))"
+  (validate-with-predicate :name #(contains? % :name))"
   (fn [m]
     (if (predicate m)
       [true {}]

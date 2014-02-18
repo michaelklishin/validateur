@@ -596,23 +596,23 @@
            (v {:id "123-abc"})))))
 
 ;;
-;; validate
+;; validate-with-predicate
 ;;
 
-(deftest test-validate-predicate-returns-false
-  (let [v (vr/validate :id (constantly false))]
+(deftest test-validate-with-predicate-predicate-returns-false
+  (let [v (vr/validate-with-predicate :id (constantly false))]
     (is (fn? v))
     (is (= [false {:id #{"is invalid"}}]
            (v {})))))
 
-(deftest test-validate-predicate-returns-true
-  (let [v (vr/validate :id (constantly true))]
+(deftest test-validate-with-predicate-predicate-returns-true
+  (let [v (vr/validate-with-predicate :id (constantly true))]
     (is (fn? v))
     (is (= [true {}]
            (v {})))))
 
-(deftest test-validate-predicate-returns-false-with-custom-message
-  (let [v (vr/validate :id (constantly false) :message "test")]
+(deftest test-validate-with-predicate-predicate-returns-false-with-custom-message
+  (let [v (vr/validate-with-predicate :id (constantly false) :message "test")]
     (is (= [false {:id #{"test"}}]
            (v {})))))
 
