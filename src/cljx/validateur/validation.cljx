@@ -187,7 +187,7 @@
       (let [v (f m attribute)]
         (if (and (nil? v) (not allow-nil))
           [false {attribute #{(msg-fn :blank m blank-message)}}]
-          (if (accept v)
+          (if (contains? accept v)
             [true {}]
             [false {attribute #{(msg-fn :acceptance m message accept)}}]))))))
 
@@ -256,7 +256,7 @@
           (if allow-nil
             [true {}]
             [false {attribute #{(blank-msg-fn m)}}])
-          (if (in v)
+          (if (contains? in v)
             [true {}]
             [false {attribute #{(msg-fn m)}}]))))))
 
@@ -295,7 +295,7 @@
       (let [v (f m attribute)]
         (if (and (nil? v) (not allow-nil))
           [false {attribute #{(blank-msg-fn m)}}]
-          (if-not (in v)
+          (if-not (contains? in v)
             [true {}]
             [false {attribute #{(msg-fn m)}}]))))))
 

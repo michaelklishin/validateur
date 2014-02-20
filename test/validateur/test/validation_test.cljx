@@ -293,6 +293,16 @@
     (is (= [false { :genre #{"must be one of: trance, dnb"} }] (v { :genre "I do not approve it" })))
     (is (= [false { :genre #{"must be one of: trance, dnb"} }] (v { :genre "1" })))))
 
+(deftest test-inclusion-validator-with-booleans
+  (let [v (vr/inclusion-of :truth :in #{true, false})]
+    (is (fn? v))
+    (is (= [false { :truth #{"can't be blank"} }]              (v { :truth nil })))
+    (is (= [true {}]                                           (v { :truth true })))
+    (is (= [true {}]                                           (v { :truth false })))
+    (is (= [false { :truth #{"must be one of: true, false"} }] (v { :truth "foo" })))
+    (is (= [false { :truth #{"must be one of: true, false"} }] (v { :truth "I do not approve it" })))
+    (is (= [false { :truth #{"must be one of: true, false"} }] (v { :truth "1" })))))
+
 (deftest test-inclusion-validator-with-nested-attributes
   (let [v (vr/inclusion-of [:track :genre] :in #{"trance", "dnb"})]
     (is (fn? v))
@@ -362,6 +372,15 @@
     (is (= [true {}]                                               (v { :genre "power metal" })))
     (is (= [false { :genre #{"must not be one of: trance, dnb"} }] (v { :genre "trance" })))
     (is (= [false { :genre #{"must not be one of: trance, dnb"} }] (v { :genre "dnb" })))))
+
+(deftest test-exclusion-validator-with-booleans
+  (let [v (vr/exclusion-of :truth :in #{true false})]
+    (is (fn? v))
+    (is (= [false { :truth #{"can't be blank"} }]                  (v { :truth nil })))
+    (is (= [true {}]                                               (v { :truth "rock" })))
+    (is (= [true {}]                                               (v { :truth "power metal" })))
+    (is (= [false { :truth #{"must not be one of: true, false"} }] (v { :truth true })))
+    (is (= [false { :truth #{"must not be one of: true, false"} }] (v { :truth false })))))
 
 (deftest test-exclusion-validator-with-custom-message
   (let [v (vr/exclusion-of :genre :in #{"trance", "dnb"}
