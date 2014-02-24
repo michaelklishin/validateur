@@ -249,7 +249,7 @@
         blank-msg-fn (fn [m] (if message-fn (message-fn :blank m attribute)
                                 blank-message))
         msg-fn (fn [m] (if message-fn (message-fn :inclusion m attribute in)
-                          (str message (clojure.string/join ", " in))))]
+                           (str message (clojure.string/join ", " in))))]
     (fn [m]
       (let [v (f m attribute)]
         (if (nil? v)
