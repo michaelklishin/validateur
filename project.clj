@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure  "1.5.1"]]
   :jar-exclusions [#"\.cljx"]
   :profiles {:1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
-             :1.6 {:dependencies [[org.clojure/clojure "1.6.0-beta1"]]}
+             :1.6 {:dependencies [[org.clojure/clojure "1.6.0-beta2"]]}
              :master {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[org.clojure/clojurescript "0.0-2138"]]
                    :plugins [[codox "0.6.4"]
