@@ -7,3 +7,5 @@ TAGS
 doc/*
 deploy.docs.sh
 target/*
+.nrepl-*
+
