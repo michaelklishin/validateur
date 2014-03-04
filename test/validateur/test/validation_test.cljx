@@ -31,6 +31,25 @@
     (is (= {:age #{ "can't be blank" }} (v { :name "Joe" })))
     (is (= {} (v { :name "Joe", :age 28 })))))
 
+(deftest presence-validation-with-nested-attributes-using-set
+  (let [v (vr/validation-set
+           (vr/presence-of [:personal :name])
+           (vr/presence-of [:personal :age]))]
+    (is (vr/valid? v {:personal { :name "Joe", :age 28 }}))
+    (is (vr/valid? (v {:personal { :name "Joe", :age 28 }})))
+    (is (not (vr/invalid? v {:personal { :name "Joe", :age 28 }})))
+    (is (not (vr/valid? v {:personal { :name "Joe" }})))
+    (is (not (vr/valid? (v {:person { :name "Joe" }}))))
+    (is (vr/invalid? v {:personal { :name "Joe" :age nil }}))
+    (is (vr/invalid? v {:personal { :name "Joe" :age "" }}))
+    (is (vr/invalid? v {:personal { :name "Joe" :age "   " }}))
+    (is (not (vr/invalid? v {:personal { :name "Joe" :age " a " }})))
+    (is (vr/invalid? v {:personal { :name "Joe" }}))
+    (is (not (vr/valid? v {:personal { :age 30 }})))
+    (is (vr/invalid? v {:personal { :age 30 }}))
+    (is (= {[:personal :age] #{ "can't be blank" }} (v {:personal { :name "Joe" }})))
+    (is (= {} (v {:personal { :name "Joe", :age 28 }})))))
+
 ;;
 ;; compose-set
 ;;
