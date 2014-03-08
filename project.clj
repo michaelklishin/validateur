@@ -9,7 +9,7 @@
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0-beta2"]]}
              :master {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[org.clojure/clojurescript "0.0-2138"]]
-                   :plugins [[codox 0.6.6]
+                   :plugins [[codox "0.6.6"]
                              [com.keminglabs/cljx "0.3.2"]
                              [lein-cljsbuild "1.0.1"]
                              [com.cemerick/clojurescript.test "0.2.1"]]
