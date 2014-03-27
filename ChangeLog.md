@@ -1,5 +1,12 @@
 ## Changes Between 1.7.0 and 2.0.0
 
+### Clojure 1.6
+
+Validateur now depends on `org.clojure/clojure` version `1.6.0`. It is
+still compatible with Clojure 1.4 and if your `project.clj` depends on
+a different version, it will be used, but 1.6 is the default now.
+
+
 ### Validator Predicates (Guards)
 
 It is now possible to wrap a validator into a function
