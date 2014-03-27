@@ -7,7 +7,7 @@
   :jar-exclusions [#"\.cljx"]
   :profiles {:1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
-             :master {:dependencies [[org.clojure/clojure "1.6.0-master-SNAPSHOT"]]}
+             :master {:dependencies [[org.clojure/clojure "1.7.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[org.clojure/clojurescript "0.0-2138"]]
                    :plugins [[codox "0.6.6"]
                              [com.keminglabs/cljx "0.3.2"]
