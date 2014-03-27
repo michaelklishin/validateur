@@ -11,7 +11,7 @@
              :dev {:dependencies [[org.clojure/clojurescript "0.0-2138"]]
                    :plugins [[codox "0.6.6"]
                              [com.keminglabs/cljx "0.3.2"]
-                             [lein-cljsbuild "1.0.1"]
+                             [lein-cljsbuild "1.0.3"]
                              [com.cemerick/clojurescript.test "0.2.1"]]
                    :cljx {:builds [{:source-paths ["src/cljx"]
                                     :output-path "target/classes"
