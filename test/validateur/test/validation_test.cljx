@@ -610,7 +610,7 @@
            (v {:id nil})))
     (is (= [true {}]
            (v {:id "abc-123"})))
-    (is (= [false {:id #{[:format {:id "123-abc"} :id ["abc-\\d\\d\\d"]]}}]
+    (is (= [false {:id #{[:format {:id "123-abc"} :id [(str #"abc-\d\d\d")]]}}]
            (v {:id "123-abc"})))))
 
 ;;

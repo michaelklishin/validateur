@@ -25,8 +25,7 @@
                                    {:source-paths ["test"]
                                     :output-path "target/test-classes"
                                     :rules :cljs}]}
-                   :cljsbuild {:crossovers [clojurewerkz.support.core]
-                               :test-commands {"phantom" ["phantomjs" :runner "target/testable.js"]}
+                   :cljsbuild {:test-commands {"phantom" ["phantomjs" :runner "target/testable.js"]}
                                :builds [{:source-paths ["target/classes" "target/test-classes"]
                                          :compiler {:output-to "target/testable.js"
                                                     :libs [""]
