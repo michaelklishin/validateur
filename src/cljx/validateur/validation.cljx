@@ -56,18 +56,34 @@
     [false {attribute #{(message-fn :length:within m attribute xs)}}]))
 
 
+(defn- attribute-presence
+  [attribute msg-fn]
+  (let [f (if (vector? attribute) get-in get)]
+    (fn [m]
+      (let [value   (f m attribute)
+            invalid (or (nil? value)
+                        (and (string? value) (clojure.string/blank? value)))]
+        (if invalid
+          {attribute #{(msg-fn :blank m attribute)}}
+          nil)))))
+
 
 ;;
 ;; API
 ;;
 
 (defn presence-of
-  "Returns a function that, when given a map, will validate presence of the attribute in that map.
+  "Returns a function that, when given a map, will validate presence of the attribute(s) in that map.
+
+   Attributes can be given as a set or as a single attribute.
+   Individual attributes can be vectors and they are treated as arguments to get-in (nested attributes).
 
    Accepted options:
    :message (default:\"can't be blank\"): returned error message
    :message-fn (default:nil): function to retrieve message with signature (fn [type map attribute & args])
                               type will be :blank, args will be nil
+   :any (default:nil): if true, validation succeeds when any attribute from the set is present
+                       the default is to require all attributes from the set to be present
 
    Used in conjunction with validation-set:
 
@@ -75,18 +91,28 @@
 
    (validation-set
      (presence-of :name)
-     (presence-of :age))"
-  [attribute & {:keys [message message-fn] :or {message "can't be blank"}}]
-  (let [f (if (vector? attribute) get-in get)
-        msg-fn (or message-fn (constantly message))]
-    (fn [m]
-      (let [value  (f m attribute)
-            res    (and (not (nil? value))
-                        (if (string? value)
-                          (not (empty? (clojure.string/trim value))) true))
-            msg (msg-fn :blank m attribute)
-            errors (if res {} {attribute #{msg}})]
-        [(empty? errors) errors]))))
+     (presence-of :age))
+
+   Or on its own:
+
+   (presence-of #{:name :age})"
+  [attributes & {:keys [message message-fn any] :or {message "can't be blank"}}]
+  (let [attrs      (if (set? attributes) attributes #{attributes})
+        msg-fn     (or message-fn (constantly message))
+        validators (map #(attribute-presence % msg-fn) attrs)]
+    (if any
+      (fn [m]
+        (loop [validators-left validators
+               errors          {}]
+          (if (empty? validators-left)
+            [(empty? errors) errors]
+            (let [errors-new ((first validators-left) m)]
+              (if (empty? errors-new)
+                [true {}]
+                (recur (rest validators-left) (conj errors errors-new)))))))
+      (fn [m]
+        (let [errors (reduce #(conj %1 (%2 m)) {} validators)]
+          [(empty? errors) errors])))))
 
 (defn ^{:private true} assoc-with-union
   [m k v]
