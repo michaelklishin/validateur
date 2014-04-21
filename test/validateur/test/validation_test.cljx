@@ -92,6 +92,20 @@
     (is (= [true {}]                                          (v {:address {:street "Old Rd"}})))
     (is (= [false {[:address :street] #{"can't be blank"}}] (v {:address {}})))))
 
+(deftest test-presence-validator-with-many-attributes-requiring-all
+  (let [v (vr/presence-of #{:name :msg})]
+    (is (= [true {}]                                                    (v {:name "Radek" :msg "Hello, World!"})))
+    (is (= [false {:name #{"can't be blank"}}]                          (v {:msg "Hello, World!"})))
+    (is (= [false {:msg #{"can't be blank"}}]                           (v {:name "Radek"})))
+    (is (= [false {:name #{"can't be blank"} :msg #{"can't be blank"}}] (v {})))))
+
+(deftest test-presence-validator-with-many-attributes-requiring-any
+  (let [v (vr/presence-of #{:name :msg} :any true)]
+    (is (= [true {}]                                                    (v {:name "Radek" :msg "Hello, World!"})))
+    (is (= [true {}]                                                    (v {:msg "Hello, World!"})))
+    (is (= [true {}]                                                    (v {:name "Radek"})))
+    (is (= [false {:name #{"can't be blank"} :msg #{"can't be blank"}}] (v {})))))
+
 (deftest test-presence-of-validator-with-custom-message
   (let [v (vr/presence-of :name :message "Низя, должно быть заполнено!")]
     (is (= [false {:name #{"Низя, должно быть заполнено!"}}] (v {:age 28})))))
