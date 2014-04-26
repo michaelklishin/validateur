@@ -1,3 +1,28 @@
+## Changes Between 2.0.0 and 2.1.0
+
+### Multi-field Support For Presence Validator
+
+`presence-of` validator now supports validation over
+multiple (all or any) fields:
+
+``` clojure
+;; both fields must be non-nil
+(vr/presence-of #{:name :msg})
+
+;; either field must be non-nil
+(vr/presence-of #{:name :msg} :any true)
+```
+
+Contributed by Radosław Piliszek.
+
+### Better ClojureScript Support
+
+Validateur no longer uses crossovers which are
+deprecated in `lein-cljsbuild`.
+
+Contributed by Radosław Piliszek.
+
+
 ## Changes Between 1.7.0 and 2.0.0
 
 ### Clojure 1.6
