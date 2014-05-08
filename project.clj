@@ -31,7 +31,7 @@
                                                     :libs [""]
                                                     :source-map "target/testable.js.map"
                                                     :optimizations :advanced}}]}
-                   :codox {:sources ["src/cljx"]
+                   :codox {:sources ["src/cljx" "target/classes"]
                            :output-dir "doc/api"}}}
   :aliases  {"all" ["with-profile" "+dev:+1.4:+1.5:+master"]}
   :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
