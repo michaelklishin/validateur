@@ -672,6 +672,12 @@
     (is (= [false {:id #{"test"}}]
            (v {})))))
 
+(deftest test-validate-with-predicate-predicate-returns-false-with-custom-message-fn
+  (let [v (vr/validate-with-predicate :id (constantly false)
+                                      :message-fn (fn [m] (str "test" (count m))))]
+    (is (= [false {:id #{"test0"}}]
+           (v {})))))
+
 
 ;;
 ;; Implementation functions
