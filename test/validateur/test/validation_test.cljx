@@ -669,6 +669,26 @@
     (is (= [true {}]
            (v {:x 12})))))
 
+;; nested
+
+(deftest test-nested
+  (let [v (vr/nested :user (vr/validation-set
+                            (vr/presence-of :name)
+                            (vr/presence-of :age)))
+        extra-nested (vr/nested [:user :profile]
+                                (vr/validation-set
+                                 (vr/presence-of :age)
+                                 (vr/presence-of [:birthday :year])))]
+    (is (fn? v))
+    (is (= {[:user :age] #{"can't be blank"}
+            [:user :name] #{"can't be blank"}}
+           (v {})))
+    (is (= {[:user :age] #{"can't be blank"}}
+           (v {:user {:name "name"}})))
+    (is (= {} (extra-nested {:user {:profile {:age 10
+                                              :birthday {:year 2004}}}})))
+    (is (= {[:user :profile :birthday :year] #{"can't be blank"}}
+           (extra-nested {:user {:profile {:age 10}}})))))
 ;;
 ;; validate-with-predicate
 ;;
