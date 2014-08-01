@@ -651,6 +651,24 @@
     (is (= [true {}]
            (v {:id "123-abc"})))))
 
+;; validate-by
+
+(deftest test-nested-validate-by
+  (let [m "Field can't be empty."
+        nested (vr/validate-by [:user :name] not-empty :message m)]
+    (is (fn? nested))
+    (is (= [false {[:user :name] #{m}}]
+           (nested {:user {:name ""}})))))
+
+(deftest test-single-validate-by
+  (let [m "Field can't be empty."
+        v (vr/validate-by :x even?)]
+    (is (fn? v))
+    (is (= [false {:x #{"Failed predicate validation."}}]
+           (v {:x 123})))
+    (is (= [true {}]
+           (v {:x 12})))))
+
 ;;
 ;; validate-with-predicate
 ;;
