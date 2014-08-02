@@ -426,7 +426,31 @@
       (validator m)
       [true {}])))
 
+(defn validate-by
+  "Returns a function that, when given a map, will validate that the
+  value of the attribute in that map is one of the given.
 
+
+   Accepted options:
+
+   :message (default: \"Failed predicate validation.\")
+
+   Used in conjunction with validation-set:
+
+   (require '[validateur.validation :refer :all])
+
+   (validation-set
+     (presence-of :name)
+     (presence-of :age)
+     (validate-by [:user :name] not-empty :message \"Username can't be empty!\"))"
+  [attr pred & {:keys [message]
+                :or {message "Failed predicate validation."}}]
+  (let [f (if (vector? attr) get-in get)]
+    (fn [m]
+      (let [v (f m attr)]
+        (if (pred v)
+          [true {}]
+          [false {attr #{message}}])))))
 
 (defn validate-with-predicate
   "Returns a function that, when given a map, will validate that the predicate returns
