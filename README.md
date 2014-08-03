@@ -16,14 +16,14 @@ Validateur requires Clojure 1.4+/ClojureScript 0.0-2138+.
 
 With Leiningen:
 
-    [com.novemberain/validateur "2.1.0"]
+    [com.novemberain/validateur "2.2.0"]
 
 With Maven:
 
     <dependency>
       <groupId>com.novemberain</groupId>
       <artifactId>validateur</artifactId>
-      <version>2.1.0</version>
+      <version>2.2.0</version>
     </dependency>
 
 
