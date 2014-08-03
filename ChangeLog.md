@@ -1,3 +1,51 @@
+## Changes Between 2.1.0 and 2.2.0
+
+### nested
+
+`nested` is a new validator runner for nested attributes.
+
+``` clojure
+(require '[validateur.validation :refer :all])
+
+(let [v (vr/nested :user (vr/validation-set
+                            (vr/presence-of :name)
+                            (vr/presence-of :age)))
+        extra-nested (vr/nested [:user :profile]
+                                (vr/validation-set
+                                 (vr/presence-of :age)
+                                 (vr/presence-of [:birthday :year])))]
+  (v {})
+  ;= {[:user :age] #{"can't be blank"}
+      [:user :name] #{"can't be blank"}}
+  (v {:user {:name "name"}})
+  ;= {[:user :age] #{"can't be blank"}}
+  (extra-nested {:user {:profile {:age 10
+                                  :birthday {:year 2004}}}})
+  ;= {}
+  (extra-nested {:user {:profile {:age 10}}})
+  ;= {[:user :profile :birthday :year] #{"can't be blank"}}
+```
+
+Contributed by Sam Ritchie.
+
+### validate-by
+
+`validate-by` is a new validator function. It returns a function that,
+when given a map, will validate that the + value of the attribute in
+that map is one of the given:
+
+``` clojure
+(require '[validateur.validation :refer :all])
+
+(validation-set
+   (presence-of :name)
+   (presence-of :age)
+   (validate-by [:user :name] not-empty :message \"Username can't be empty!\"))
+```
+
+Contributed by Sam Ritchie.
+
+
 ## Changes Between 2.0.0 and 2.1.0
 
 ### Multi-field Support For Presence Validator
