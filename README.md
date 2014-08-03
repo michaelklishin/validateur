@@ -12,6 +12,16 @@ Validateur requires Clojure 1.4+/ClojureScript 0.0-2138+.
 
 ## Maven Artifacts
 
+Validateur artifacts are [released to Clojars](https://clojars.org/com.novemberain/validateur).
+If you are using Maven, add the following repository definition to your `pom.xml`:
+
+``` xml
+<repository>
+  <id>clojars.org</id>
+  <url>http://clojars.org/repo</url>
+</repository>
+```
+
 ### The Latest Release
 
 With Leiningen:
