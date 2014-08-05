@@ -661,6 +661,10 @@
            (nested {:user {:name ""}})))))
 
 (deftest test-nest-unnest
+  (is (= {[:b] "see"}
+         (vr/unnest :a {[:a :b] "see"
+                        [:d] "ee!"}))
+      "unnest filters out elements that don't match the prefix.")
   (are [attr input result]
     (and (= result (vr/nest attr input))
          (= input (vr/unnest attr (vr/nest attr input))))
