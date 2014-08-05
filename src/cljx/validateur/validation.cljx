@@ -25,6 +25,16 @@
     (vec arg)
     (vec [arg])))
 
+(defn- prefix?
+  "Returns true if the left vector is a prefix of the right vector,
+     false otherwise."
+  [l r]
+  (let [lcount (count l)
+        rcount (count r)]
+    (cond (< rcount lcount) false
+          (= lcount rcount) (= l r)
+          :else (= l (subvec r 0 lcount)))))
+
 (defn- member?
   [coll x]
   (some #(= x %) coll))
@@ -453,21 +463,38 @@
           [false {attr #{message}}])))))
 
 
-(letfn [(collectify [attr]
-          (if (sequential? attr) attr [attr]))]
-  (defn nested
-    "Takes an attribute (either a single key or a vector of keys) and a
+(defn nest
+  "Takes an attribute (either a single key or a vector of keys) and a
+     validation set and prefixes the keys in the validation set's
+     error map with that attribute."
+  [attr m]
+  (let [attr (as-vec attr)]
+    (->> (for [[k messages] m
+               :let [k (into attr (as-vec k))]]
+           [k messages])
+         (into {}))))
+
+(defn nested
+  "Takes an attribute (either a single key or a vector of keys) and a
   validation set, and returns a function that will apply the supplied
   validation set to the inner value located at `attr`."
-    [attr vset]
-    (let [f (if (vector? attr) get-in get)]
-      (fn [m]
-        (let [subm (f m attr)]
-          (->> (for [[k message] (vset subm)
-                     :let [k (into (collectify attr)
-                                   (collectify k))]]
-                 [k message])
-               (into {})))))))
+  [attr vset]
+  (let [f (if (vector? attr) get-in get)]
+    (fn [m] (nest attr (f m attr)))))
+
+(defn unnest
+  "Takes an attribute (either a single key or a vector of keys) and a
+     validation set and returns a new validation set with that
+     attribute removed from the beginning of any matching internal
+     attributes. Entries in the validation set that aren't prefixed
+     with the supplied attribute will be filtered."
+  [attr m]
+  (let [attr (as-vec attr)
+        attrcount (count attr)]
+    (->> (for [[k messages] m
+               :when (prefix? attr k)]
+           [(subvec k attrcount (count k)) messages])
+         (into {}))))
 
 
 (defn validate-with-predicate
