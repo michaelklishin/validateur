@@ -2,7 +2,7 @@
   (:require [validateur.validation :as vr]
             #+clj [clojure.test :refer :all]
             #+cljs [cemerick.cljs.test :as t])
-  #+cljs (:require-macros [cemerick.cljs.test :refer (is deftest testing)]))
+  #+cljs (:require-macros [cemerick.cljs.test :refer (is are deftest testing)]))
 
 #+clj (println (str "Using Clojure version " *clojure-version*))
 
@@ -659,6 +659,19 @@
     (is (fn? nested))
     (is (= [false {[:user :name] #{m}}]
            (nested {:user {:name ""}})))))
+
+(deftest test-nest-unnest
+  (is (= {[:b] "see"}
+         (vr/unnest :a {[:a :b] "see"
+                        [:d] "ee!"}))
+      "unnest filters out elements that don't match the prefix.")
+  (are [attr input result]
+    (and (= result (vr/nest attr input))
+         (= input (vr/unnest attr (vr/nest attr input))))
+    :a {[:b :c] "dee!" [:e] "eff!"} {[:a :b :c] "dee!"
+                                     [:a :e] "eff!"}
+    [:a] {[:b :c] "dee!" [:e] "eff!"} {[:a :b :c] "dee!"
+                                       [:a :e] "eff!"}))
 
 (deftest test-single-validate-by
   (let [m "Field can't be empty."
