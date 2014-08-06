@@ -2,7 +2,7 @@
   :description "Functional validations inspired by Ruby's ActiveModel"
   :license { :name "Eclipse Public License" }
   :url "http://clojurevalidations.info"
-  :min-lein-version "2.4.2"
+  :min-lein-version "2.4.3"
   :dependencies [[org.clojure/clojure  "1.6.0"]]
   :jar-exclusions [#"\.cljx"]
   :profiles {:1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
