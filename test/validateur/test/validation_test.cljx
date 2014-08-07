@@ -661,8 +661,16 @@
            (nested {:user {:name ""}})))))
 
 (deftest test-nest-unnest
+  (is (empty? (vr/unnest :a {:a "bee"}))
+      "Unnesting a bare, non-vector key will filter it.")
+
+  (is (empty? (vr/unnest :a {[:a] "bee"}))
+      "Even if the inner key is a vector, it'll still get
+      filtered (otherwise we'd have empty attributes)")
+
   (is (= {[:b] "see"}
          (vr/unnest :a {[:a :b] "see"
+                        [:a] "bee"
                         [:d] "ee!"}))
       "unnest filters out elements that don't match the prefix.")
   (are [attr input result]
