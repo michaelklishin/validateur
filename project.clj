@@ -7,6 +7,7 @@
   :jar-exclusions [#"\.cljx"]
   :profiles {:1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
+             :1.7 {:dependencies [[org.clojure/clojure "1.7.0-alpha1"]]}
              :master {:dependencies [[org.clojure/clojure "1.7.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[org.clojure/clojurescript "0.0-2138"]]
                    :plugins [[codox "0.8.10"]
@@ -33,7 +34,7 @@
                                                     :optimizations :advanced}}]}
                    :codox {:sources ["src/cljx" "target/classes"]
                            :output-dir "doc/api"}}}
-  :aliases  {"all" ["with-profile" "+dev:+1.4:+1.5:+master"]}
+  :aliases  {"all" ["with-profile" "+dev:+1.4:+1.5:+1.7:+master"]}
   :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
                              :releases {:checksum :fail :update :always}}
