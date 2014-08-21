@@ -13,7 +13,7 @@
   (vr/validation-set
    (vr/length-of :password :within (range 5 15))
    (vr/length-of :phone :is 10)))
-   ```
+```
 
 And then the composed, user account validator:
 
@@ -40,7 +40,7 @@ Next are the "rendering" functions. Imagine that these are input components resp
   present."
   [errors]
   (prn "All Errors: " errors))
-  ```
+```
 
 The `render-account` function renders all subcomponents, performs global validation and routes the errors and data where each needs to go:
 
@@ -58,7 +58,7 @@ The `render-account` function renders all subcomponents, performs global validat
     (render-profile profile (vr/unnest :profile errors))
     (render-secrets secrets (vr/unnest :secrets errors))
     (submit-button errors)))
-    ```
+```
 
 Let's see this function in action. Calling `render-account` with an invalid map triggers a render that shows off a bunch of errors:
 
