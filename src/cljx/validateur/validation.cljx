@@ -26,14 +26,13 @@
     (vec [arg])))
 
 (defn- prefix?
-  "Returns true if the left vector is a prefix of the right vector,
-     false otherwise."
+  "Returns true if the left vector is a strict prefix of the right
+  vector, false otherwise."
   [l r]
   (let [lcount (count l)
         rcount (count r)]
-    (cond (< rcount lcount) false
-          (= lcount rcount) (= l r)
-          :else (= l (subvec r 0 lcount)))))
+    (and (< lcount rcount)
+         (= l (subvec r 0 lcount)))))
 
 (defn- member?
   [coll x]
@@ -480,7 +479,7 @@
   validation set to the inner value located at `attr`."
   [attr vset]
   (let [f (if (vector? attr) get-in get)]
-    (fn [m] (nest attr (f m attr)))))
+    (fn [m] (nest attr (vset (f m attr))))))
 
 (defn unnest
   "Takes an attribute (either a single key or a vector of keys) and a
@@ -492,7 +491,9 @@
   (let [attr (as-vec attr)
         attrcount (count attr)]
     (->> (for [[k messages] m
-               :when (prefix? attr k)]
+               :when (and (sequential? k)
+                          (> (count k) 1)
+                          (prefix? attr k))]
            [(subvec k attrcount (count k)) messages])
          (into {}))))
 

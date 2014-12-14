@@ -26,14 +26,14 @@ If you are using Maven, add the following repository definition to your `pom.xml
 
 With Leiningen:
 
-    [com.novemberain/validateur "2.2.0"]
+    [com.novemberain/validateur "2.3.1"]
 
 With Maven:
 
     <dependency>
       <groupId>com.novemberain</groupId>
       <artifactId>validateur</artifactId>
-      <version>2.2.0</version>
+      <version>2.3.1</version>
     </dependency>
 
 
@@ -63,7 +63,8 @@ tests pass, submit a pull request on Github.
 
 ## License
 
-Copyright (C) 2011-2014 Michael S. Klishin
+Copyright (C) 2011-2014 Michael S. Klishin, Alex Petrov, the ClojureWerkz team,
+and [contributors](https://github.com/michaelklishin/validateur/graphs/contributors).
 
 Distributed under the Eclipse Public License, the same as Clojure.
 
