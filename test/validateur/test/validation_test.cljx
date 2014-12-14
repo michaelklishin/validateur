@@ -12,6 +12,21 @@
 ;; validation-set
 ;;
 
+(deftest validate-some-test
+  "Tests for the validate-some helper."
+  (let [v (vr/validate-some
+           (vr/presence-of :cake-count :message "missing_cake")
+           (vr/validate-by :cake-count odd? :message "even_cake"))]
+    (is (= [true #{}] (v {:cake-count 1}))
+        "Odd cake counts are valid.")
+
+    (is (= [false {:cake-count #{"even_cake"}}] (v {:cake-count 2}))
+        "Even cake counts only throw the second error, since the first
+      validation passed.")
+
+    (is (= [false {:cake-count #{"missing_cake"}}] (v {}))
+        "The second validation never gets called and never throws a
+        NPE, as it would if we just composed them up.")))
 
 (deftest presence-validation-using-set
   (let [v (vr/validation-set
@@ -729,6 +744,36 @@
     (is (= [false {:id #{"test0"}}]
            (v {})))))
 
+
+;;
+;; Error Reporting
+;;
+
+(deftest errors-test
+  (let [v (vr/validation-set
+           (vr/presence-of :cake-count))
+        compound-v (vr/validation-set
+                    (vr/presence-of [:a :b])
+                    (vr/presence-of :c))]
+
+    (is (vr/errors? :cake-count (v {}))
+        "Missing key triggers an error.")
+
+    (is (= (vr/errors [:cake-count] (v {}))
+           (vr/errors :cake-count (v {}))
+           #{"can't be blank"})
+        "errors returns the actual error.")
+
+    (is (vr/errors? :cake-count {[:cake-count] #{"something"}})
+        "It works if the error map has a nested, single keyword (as
+        happens when we use unnest)")
+
+    (is (not (vr/errors? :cake-count (v {:cake-count "hi!"})))
+        "No errors, since cake-count is present.")
+
+    (testing "errors? Works for nested keywords too"
+      (is (vr/errors? [:a :b] (compound-v {})))
+      (is (not (vr/errors? [:a :b] (compound-v {:a {:b "something"}})))))))
 
 ;;
 ;; Implementation functions
