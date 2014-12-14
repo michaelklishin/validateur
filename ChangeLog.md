@@ -30,11 +30,16 @@
 
 ### errors? and errors
 
-Errors in validateur are vectors if keys are nested. If keys are only one layer deep - `:cake`, for example - the error can live at `:cake` or `[:cake]`.
+Errors in validateur are vectors if keys are nested. If keys are only
+one layer deep - `:cake`, for example - the error can live at `:cake`
+or `[:cake]`.
 
-The `errors` function returns the set of errors for some key, nested or bare. `:cake` will return errors stored under `[:cake]` and vice-versa.
+The `errors` function returns the set of errors for some key, nested
+or bare. `:cake` will return errors stored under `[:cake]` and
+vice-versa.
 
-`errors?` is a boolean wrapper that returns true if some key has errors, false otherwise.
+`errors?` is a boolean wrapper that returns true if some key has
+errors, false otherwise.
 
 ## Changes Between 2.2.0 and 2.3.0
 
