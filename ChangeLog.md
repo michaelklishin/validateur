@@ -26,7 +26,7 @@
   (v {})
   ;;=> [false {:cake-count #{"missing_cake"}}]
   )
-  ```
+```
 
 ### errors? and errors
 
