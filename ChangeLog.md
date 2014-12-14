@@ -28,6 +28,8 @@
   )
 ```
 
+Contributed by Sam Ritchie (PaddleGuru).
+
 ### errors? and errors
 
 Errors in validateur are vectors if keys are nested. If keys are only
@@ -40,6 +42,8 @@ vice-versa.
 
 `errors?` is a boolean wrapper that returns true if some key has
 errors, false otherwise.
+
+Contributed by Sam Ritchie (PaddleGuru).
 
 ## Changes Between 2.2.0 and 2.3.0
 
