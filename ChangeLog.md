@@ -1,5 +1,9 @@
 ## Changes Between 2.3.0 and 2.4.0
 
+### Clojure 1.4 Support Dropped
+
+The project no longer tries to maintain Clojure 1.4 compatibility.
+
 ### validate-some
 
 `validate-some` tries any number of validators, short-circuiting at the first failed validator. This behavior is similar to `or`.
