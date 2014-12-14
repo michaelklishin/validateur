@@ -1,3 +1,41 @@
+## Changes Between 2.3.0 and 2.4.0
+
+### validate-some
+
+`validate-some` tries any number of validators, short-circuiting at the first failed validator. This behavior is similar to `or`.
+
+```clojure
+(require '[validateur.validation :refer :all])
+
+(let [v (validate-some
+         (presence-of :cake-count :message "missing_cake")
+         (validate-by :cake-count odd? :message "even_cake"))]
+
+  "Odd cake counts are valid."
+  (v {:cake-count 1})
+  ;;=> [true #{}]
+
+
+  "Even cake counts only throw the second error, since the first
+  validation passed."
+  (v {:cake-count 2})
+  ;;=> [false {:cake-count #{"even_cake"}}]
+
+  "The second validation never gets called and never throws a NPE, as
+  it would if we just composed them up."
+  (v {})
+  ;;=> [false {:cake-count #{"missing_cake"}}]
+  )
+  ```
+
+### errors? and errors
+
+Errors in validateur are vectors if keys are nested. If keys are only one layer deep - `:cake`, for example - the error can live at `:cake` or `[:cake]`.
+
+The `errors` function returns the set of errors for some key, nested or bare. `:cake` will return errors stored under `[:cake]` and vice-versa.
+
+`errors?` is a boolean wrapper that returns true if some key has errors, false otherwise.
+
 ## Changes Between 2.2.0 and 2.3.0
 
 ### unnest
@@ -114,7 +152,7 @@ Calling `render-account` with a valid map prints only the data:
 `nested` is a new validator runner for nested attributes.
 
 ``` clojure
-(require '[validateur.validation :refer :all])
+(require '[validateur.validation :as :vr])
 
 (let [v (vr/nested :user (vr/validation-set
                             (vr/presence-of :name)

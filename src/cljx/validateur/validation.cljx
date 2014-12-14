@@ -542,6 +542,29 @@
             {}
             validators)))
 
+(defn validate-some
+  "Takes a sequence of validators and returns a validator that returns
+  the result of the FIRST failing validator, short-circuiting
+  after. This is helpful when downstream validations call functions
+  that can't have nil inputs, for example.
+
+  Example:
+
+  (require '[validateur.validation :refer :all])
+
+  (validate-some
+    (presence-of :name)
+    (validate-by :name not-empty))"
+  [& validators]
+  (fn [m]
+    (loop [[v & rest] validators]
+      (if-not v
+        [true #{}]
+        (let [[passed? :as result] (v m)]
+          (if passed?
+            (recur rest)
+            result))))))
+
 (defn compose-sets
   "Takes a collection of validation-sets and returns a validaton-set function which applies
    all given validation-set and merges the results.
@@ -566,3 +589,16 @@
     (empty? (vs m))))
 
 (def invalid? (complement valid?))
+
+(defn errors
+  "Takes in a key (either a single keyword or a nested key) and
+  returns any errors present in the validation error map for that key,
+  or nil if none are present."
+  [k m]
+  (let [[k & rest :as ks] (if (sequential? k) k [k])]
+    (not-empty
+     (if (nil? rest)
+       (or (m k) (m ks))
+       (m ks)))))
+
+(def errors? (comp boolean errors))
