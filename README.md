@@ -55,7 +55,7 @@ Our test suite has usage examples for each validator, built-in validation functi
 Validateur uses [Leiningen 2](https://github.com/technomancy/leiningen/blob/master/doc/TUTORIAL.md). Make
 sure you have it installed and then run tests against all supported Clojure versions using
 
-    lein2 do clean, cljx once, all test, cljsbuild test
+    lein do clean, cljx once, all test, cljsbuild test
 
 Then create a branch and make your changes on it. Once you are done with your changes and all
 tests pass, submit a pull request on Github.
