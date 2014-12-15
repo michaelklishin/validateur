@@ -1,4 +1,4 @@
-(defproject com.novemberain/validateur "2.5.0-SNAPSHOT"
+(defproject com.novemberain/validateur "2.4.1"
   :description "Functional validations inspired by Ruby's ActiveModel"
   :license { :name "Eclipse Public License" }
   :url "http://clojurevalidations.info"
@@ -10,7 +10,7 @@
              :master {:dependencies [[org.clojure/clojure "1.7.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[org.clojure/clojurescript "0.0-2138"]]
                    :plugins [[codox "0.8.10"]
-                             [com.keminglabs/cljx "0.3.2"]
+                             [com.keminglabs/cljx "0.5.0" :exclusions [org.clojure/clojure]]
                              [lein-cljsbuild "1.0.2"]
                              [com.cemerick/clojurescript.test "0.2.1"]]
                    :cljx {:builds [{:source-paths ["src/cljx"]
