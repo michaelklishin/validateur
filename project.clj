@@ -4,7 +4,7 @@
   :url "http://clojurevalidations.info"
   :min-lein-version "2.5.0"
   :dependencies [[org.clojure/clojure  "1.6.0"]]
-  :jar-exclusions [#"\.cljx"]
+  :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
   :profiles {:1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
              :1.7 {:dependencies [[org.clojure/clojure "1.7.0-alpha4"]]}
              :master {:dependencies [[org.clojure/clojure "1.7.0-master-SNAPSHOT"]]}
@@ -43,4 +43,5 @@
   :source-paths ["src/cljx" "target/classes"]
   :test-paths ["target/test-classes"]
   :test-selectors {:focus :focus}
-  :codox {:only [validateur.validation]})
+  :codox {:only [validateur.validation]}
+  :auto-clean false)
