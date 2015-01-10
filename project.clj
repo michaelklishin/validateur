@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure  "1.6.0"]]
   :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
   :profiles {:1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
-             :1.7 {:dependencies [[org.clojure/clojure "1.7.0-alpha4"]]}
+             :1.7 {:dependencies [[org.clojure/clojure "1.7.0-alpha5"]]}
              :master {:dependencies [[org.clojure/clojure "1.7.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[org.clojure/clojurescript "0.0-2138"]]
                    :plugins [[codox "0.8.10"]
