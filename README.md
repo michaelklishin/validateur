@@ -67,6 +67,3 @@ Copyright (C) 2011-2015 Michael S. Klishin, Alex Petrov, the ClojureWerkz team,
 and [contributors](https://github.com/michaelklishin/validateur/graphs/contributors).
 
 Distributed under the Eclipse Public License, the same as Clojure.
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/michaelklishin/validateur/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
