@@ -1,4 +1,4 @@
-(defproject com.novemberain/validateur "2.5.0-SNAPSHOT"
+(defproject com.novemberain/validateur "2.5.0"
   :description "Functional validations inspired by Ruby's ActiveModel"
   :license { :name "Eclipse Public License" }
   :url "http://clojurevalidations.info"
@@ -8,7 +8,7 @@
   :profiles {:1.8 {:dependencies [[org.clojure/clojure "1.8.0-RC4"]]}
              :master {:dependencies [[org.clojure/clojure "1.8.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[org.clojure/clojurescript "0.0-2138"]]
-                   :plugins [[codox "0.8.10"]
+                   :plugins [[lein-codox "0.9.0"]
                              [com.keminglabs/cljx "0.5.0" :exclusions [org.clojure/clojure]]
                              [lein-cljsbuild "1.0.2"]
                              [com.cemerick/clojurescript.test "0.2.1"]]
@@ -30,8 +30,7 @@
                                                     :libs [""]
                                                     :source-map "target/testable.js.map"
                                                     :optimizations :advanced}}]}
-                   :codox {:sources ["src/cljx" "target/classes"]
-                           :output-dir "doc/api"}}}
+                   :codox {:source-paths ["src/cljx" "target/classes"]}}}
   :aliases  {"all" ["with-profile" "+dev:dev,1.8:dev,master"]}
   :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
