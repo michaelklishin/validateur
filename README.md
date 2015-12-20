@@ -26,14 +26,14 @@ If you are using Maven, add the following repository definition to your `pom.xml
 
 With Leiningen:
 
-    [com.novemberain/validateur "2.4.2"]
+    [com.novemberain/validateur "2.5.0"]
 
 With Maven:
 
     <dependency>
       <groupId>com.novemberain</groupId>
       <artifactId>validateur</artifactId>
-      <version>2.4.2</version>
+      <version>2.5.0</version>
     </dependency>
 
 
