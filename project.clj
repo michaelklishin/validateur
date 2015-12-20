@@ -3,10 +3,9 @@
   :license { :name "Eclipse Public License" }
   :url "http://clojurevalidations.info"
   :min-lein-version "2.5.1"
-  :dependencies [[org.clojure/clojure  "1.6.0"]]
+  :dependencies [[org.clojure/clojure  "1.7.0"]]
   :jar-exclusions [#"\.cljx|\.swp|\.swo|\.DS_Store"]
-  :profiles {:1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
-             :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
+  :profiles {:1.8 {:dependencies [[org.clojure/clojure "1.8.0-RC4"]]}
              :master {:dependencies [[org.clojure/clojure "1.8.0-master-SNAPSHOT"]]}
              :dev {:dependencies [[org.clojure/clojurescript "0.0-2138"]]
                    :plugins [[codox "0.8.10"]
@@ -33,7 +32,7 @@
                                                     :optimizations :advanced}}]}
                    :codox {:sources ["src/cljx" "target/classes"]
                            :output-dir "doc/api"}}}
-  :aliases  {"all" ["with-profile" "+dev:+1.5:+1.7:+master"]}
+  :aliases  {"all" ["with-profile" "+dev:dev,1.8:dev,master"]}
   :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
                              :releases {:checksum :fail :update :always}}
