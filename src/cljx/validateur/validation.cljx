@@ -123,7 +123,7 @@
         (let [errors (reduce #(conj %1 (%2 m)) {} validators)]
           [(empty? errors) errors])))))
 
-(defn ^{:private true} assoc-with-union
+(defn- assoc-with-union
   [m k v]
   (assoc m k (apply cs/union [(get m k) v])))
 
