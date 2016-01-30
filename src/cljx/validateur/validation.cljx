@@ -25,7 +25,7 @@
     (vec arg)
     (vec [arg])))
 
-(defn- prefix?
+(defn ^{:private true} prefix?
   "Returns true if the left vector is a strict prefix of the right
   vector, false otherwise."
   [l r]
@@ -34,30 +34,30 @@
     (and (< lcount rcount)
          (= l (subvec r 0 lcount)))))
 
-(defn- member?
+(defn ^{:private true} member?
   [coll x]
   (some #(= x %) coll))
 
 
-(defn- not-allowed-to-be-blank?
+(defn ^{:private true} not-allowed-to-be-blank?
   [v ^Boolean allow-nil ^Boolean allow-blank]
   (or (and (nil? v)                  (not allow-nil))
       (and (not (nil? v)) (clojure.string/blank? v) (not allow-blank))))
 
-(defn- allowed-to-be-blank?
+(defn ^{:private true} allowed-to-be-blank?
   [v ^Boolean allow-nil ^Boolean allow-blank]
   (or (and (nil? v)                  allow-nil)
       (and (not (nil? v)) (clojure.string/blank? v) allow-blank)))
 
 
-(defn- equal-length-of
+(defn ^{:private true} equal-length-of
   [m attribute actual expected-length allow-nil allow-blank message-fn]
   (if (or (= expected-length (count actual))
           (allowed-to-be-blank? actual allow-nil allow-blank))
     [true {}]
     [false {attribute #{(message-fn :length:is m attribute expected-length)}}]))
 
-(defn- range-length-of
+(defn ^{:private true} range-length-of
   [m attribute actual xs allow-nil allow-blank message-fn]
   (if (or (member? xs (count actual))
           (allowed-to-be-blank? actual allow-nil allow-blank))
@@ -65,7 +65,7 @@
     [false {attribute #{(message-fn :length:within m attribute xs)}}]))
 
 
-(defn- attribute-presence
+(defn ^{:private true} attribute-presence
   [attribute msg-fn]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
