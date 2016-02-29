@@ -786,6 +786,67 @@
               (vr/inclusion-of :status :in #{:active :inactive})))]
     (is (= {} (v {:person {:name "Michał" :status :active}})))))
 
+;;
+;; validate-nested
+;;
+
+(deftest test-validate-nested-validation-fails
+  (let [foo-v (vr/validation-set
+                (vr/presence-of :bar)
+                (vr/format-of :bar :format #"[a-z]+"))
+        v (vr/validate-nested :foo foo-v)]
+    (is (= [false {[:foo :bar] #{"can't be blank"}}]
+           (v {})))
+    (is (= [false {[:foo :bar] #{"can't be blank"}}]
+           (v {:foo {}})))
+    (is (= [false {[:foo :bar] #{"can't be blank"}}]
+           (v {:foo {:bar nil}})))
+    (is (= [false {[:foo :bar] #{"can't be blank"}}]
+           (v {:foo {:bar ""}})))
+    (is (= [false {[:foo :bar] #{"has incorrect format"}}]
+           (v {:foo {:bar "123"}})))))
+
+(deftest test-validate-nested-validation-succeeds
+  (let [foo-v (vr/validation-set
+                (vr/presence-of :bar)
+                (vr/format-of :bar :format #"[a-z]+"))
+        v (vr/validate-nested :foo foo-v)]
+    (is (= [true {}]
+           (v {:foo {:bar "asdf"}})))))
+
+(deftest test-validate-nested-validation-fails-with-custom-message
+  (let [foo-v (vr/validation-set
+                (vr/presence-of :bar)
+                (vr/format-of :bar :format #"[a-z]+"))
+        v (vr/validate-nested :foo foo-v :message "test")]
+    (is (= [false {[:foo :bar] #{"test"}}]
+           (v {})))
+    (is (= [false {[:foo :bar] #{"test"}}]
+           (v {:foo {}})))
+    (is (= [false {[:foo :bar] #{"test"}}]
+           (v {:foo {:bar nil}})))
+    (is (= [false {[:foo :bar] #{"test"}}]
+           (v {:foo {:bar ""}})))
+    (is (= [false {[:foo :bar] #{"test"}}]
+           (v {:foo {:bar "123"}})))))
+
+(deftest test-validate-nested-validation-fails-with-custom-message-fn
+  (let [foo-v (vr/validation-set
+                (vr/presence-of :bar)
+                (vr/format-of :bar :format #"[a-z]+"))
+        v (vr/validate-nested :foo foo-v
+            :message-fn (fn [m]
+                          (str "test" (+ (count m) (count (:foo m))))))]
+    (is (= [false {[:foo :bar] #{"test0"}}]
+           (v {})))
+    (is (= [false {[:foo :bar] #{"test0"}}]
+           (v {:foo {}})))
+    (is (= [false {[:foo :bar] #{"test1"}}]
+           (v {:foo {:bar nil}})))
+    (is (= [false {[:foo :bar] #{"test1"}}]
+           (v {:foo {:bar ""}})))
+    (is (= [false {[:foo :bar] #{"test1"}}]
+           (v {:foo {:bar "123"}})))))
 
 ;;
 ;; Error Reporting
