@@ -1,10 +1,9 @@
 (ns validateur.test.validation-test
   (:require [validateur.validation :as vr]
-            #+clj [clojure.test :refer :all]
-            #+cljs [cemerick.cljs.test :as t])
-  #+cljs (:require-macros [cemerick.cljs.test :refer (is are deftest testing)]))
+            #?(:clj  [clojure.test :refer :all]
+               :cljs [cljs.test :refer-macros [is are deftest testing]])))
 
-#+clj (println (str "Using Clojure version " *clojure-version*))
+#?(:clj (println (str "Using Clojure version " *clojure-version*)))
 
 (defn test-message-fn [type map attr & args]
   [type map attr args])
