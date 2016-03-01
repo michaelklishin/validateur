@@ -791,62 +791,62 @@
 ;;
 
 (deftest test-validate-nested-validation-fails
-  (let [foo-v (vr/validation-set
-                (vr/presence-of :bar)
-                (vr/format-of :bar :format #"[a-z]+"))
-        v (vr/validate-nested :foo foo-v)]
-    (is (= [false {[:foo :bar] #{"can't be blank"}}]
+  (let [person-v (vr/validation-set
+                   (vr/presence-of :name)
+                   (vr/format-of :name :format #"[A-Za-z]+"))
+        v (vr/validate-nested :person person-v)]
+    (is (= [false {[:person :name] #{"can't be blank"}}]
            (v {})))
-    (is (= [false {[:foo :bar] #{"can't be blank"}}]
-           (v {:foo {}})))
-    (is (= [false {[:foo :bar] #{"can't be blank"}}]
-           (v {:foo {:bar nil}})))
-    (is (= [false {[:foo :bar] #{"can't be blank"}}]
-           (v {:foo {:bar ""}})))
-    (is (= [false {[:foo :bar] #{"has incorrect format"}}]
-           (v {:foo {:bar "123"}})))))
+    (is (= [false {[:person :name] #{"can't be blank"}}]
+           (v {:person {}})))
+    (is (= [false {[:person :name] #{"can't be blank"}}]
+           (v {:person {:name nil}})))
+    (is (= [false {[:person :name] #{"can't be blank"}}]
+           (v {:person {:name ""}})))
+    (is (= [false {[:person :name] #{"has incorrect format"}}]
+           (v {:person {:name "123"}})))))
 
 (deftest test-validate-nested-validation-succeeds
-  (let [foo-v (vr/validation-set
-                (vr/presence-of :bar)
-                (vr/format-of :bar :format #"[a-z]+"))
-        v (vr/validate-nested :foo foo-v)]
+  (let [person-v (vr/validation-set
+                   (vr/presence-of :name)
+                   (vr/format-of :name :format #"[A-Za-z]+"))
+        v (vr/validate-nested :person person-v)]
     (is (= [true {}]
-           (v {:foo {:bar "asdf"}})))))
+           (v {:person {:name "Michał"}})))))
 
 (deftest test-validate-nested-validation-fails-with-custom-message
-  (let [foo-v (vr/validation-set
-                (vr/presence-of :bar)
-                (vr/format-of :bar :format #"[a-z]+"))
-        v (vr/validate-nested :foo foo-v :message "test")]
-    (is (= [false {[:foo :bar] #{"test"}}]
+  (let [person-v (vr/validation-set
+                   (vr/presence-of :name)
+                   (vr/format-of :name :format #"[A-Za-z]+"))
+        v (vr/validate-nested :person person-v :message "test")]
+    (is (= [false {[:person :name] #{"test"}}]
            (v {})))
-    (is (= [false {[:foo :bar] #{"test"}}]
-           (v {:foo {}})))
-    (is (= [false {[:foo :bar] #{"test"}}]
-           (v {:foo {:bar nil}})))
-    (is (= [false {[:foo :bar] #{"test"}}]
-           (v {:foo {:bar ""}})))
-    (is (= [false {[:foo :bar] #{"test"}}]
-           (v {:foo {:bar "123"}})))))
+    (is (= [false {[:person :name] #{"test"}}]
+           (v {:person {}})))
+    (is (= [false {[:person :name] #{"test"}}]
+           (v {:person {:name nil}})))
+    (is (= [false {[:person :name] #{"test"}}]
+           (v {:person {:name ""}})))
+    (is (= [false {[:person :name] #{"test"}}]
+           (v {:person {:name "123"}})))))
 
 (deftest test-validate-nested-validation-fails-with-custom-message-fn
-  (let [foo-v (vr/validation-set
-                (vr/presence-of :bar)
-                (vr/format-of :bar :format #"[a-z]+"))
-        v (vr/validate-nested :foo foo-v
+  (let [person-v (vr/validation-set
+                   (vr/presence-of :name)
+                   (vr/format-of :name :format #"[A-Za-z]+"))
+        v (vr/validate-nested :person person-v
             :message-fn (fn [m]
-                          (str "test" (+ (count m) (count (:foo m))))))]
-    (is (= [false {[:foo :bar] #{"test0"}}]
+                          (str "test" (+ (count m) (count (:person m))))))]
+    (is (= [false {[:person :name] #{"test0"}}]
            (v {})))
-    (is (= [false {[:foo :bar] #{"test0"}}]
-           (v {:foo {}})))
-    (is (= [false {[:foo :bar] #{"test1"}}]
-           (v {:foo {:bar nil}})))
-    (is (= [false {[:foo :bar] #{"test1"}}]
-           (v {:foo {:bar ""}})))
-    (is (= [false {[:foo :bar] #{"test1"}}]
-           (v {:foo {:bar "123"}})))))
+    (is (= [false {[:person :name] #{"test0"}}]
+           (v {:person {}})))
+    (is (= [false {[:person :name] #{"test1"}}]
+           (v {:person {:name nil}})))
+    (is (= [false {[:person :name] #{"test1"}}]
+           (v {:person {:name ""}})))
+    (is (= [false {[:person :name] #{"test1"}}]
+           (v {:person {:name "123"}})))))
 
 ;;
 ;; Error Reporting
