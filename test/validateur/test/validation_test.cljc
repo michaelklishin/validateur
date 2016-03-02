@@ -724,6 +724,7 @@
                                               :birthday {:year 2004}}}})))
     (is (= {[:user :profile :birthday :year] #{"can't be blank"}}
            (extra-nested {:user {:profile {:age 10}}})))))
+
 ;;
 ;; validate-with-predicate
 ;;
@@ -750,6 +751,40 @@
                                       :message-fn (fn [m] (str "test" (count m))))]
     (is (= [false {:id #{"test0"}}]
            (v {})))))
+
+;;
+;; validity-of
+;;
+
+(deftest test-validity-of-validation-fails
+  (let [v (vr/validation-set
+            (vr/presence-of :person)
+            (vr/validity-of :person
+              (vr/presence-of :name)
+              (vr/format-of :name :format #"[A-Za-zł]+")
+              (vr/inclusion-of :status :in #{:active :inactive})))]
+    (is (= {:person #{"can't be blank"}
+            [:person :name] #{"can't be blank"}
+            [:person :status] #{"can't be blank"}}
+           (v {})))
+    (is (= {[:person :name] #{"can't be blank"}
+            [:person :status] #{"can't be blank"}}
+           (v {:person {}})))
+    (is (= {[:person :name] #{"can't be blank"}
+            [:person :status] #{"can't be blank"}}
+           (v {:person {:name nil :status nil}})))
+    (is (= {[:person :name] #{"has incorrect format"}
+            [:person :status] #{"must be one of: :active, :inactive"}}
+           (v {:person {:name "!!!" :status :foo}})))))
+
+(deftest test-validity-of-validation-succeeds
+  (let [v (vr/validation-set
+            (vr/presence-of :person)
+            (vr/validity-of :person
+              (vr/presence-of :name)
+              (vr/format-of :name :format #"[A-Za-zł]+")
+              (vr/inclusion-of :status :in #{:active :inactive})))]
+    (is (= {} (v {:person {:name "Michał" :status :active}})))))
 
 
 ;;
