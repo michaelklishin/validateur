@@ -519,6 +519,31 @@
         [true {}]
         [false {attribute #{(message-fn m)}}]))))
 
+(defn validity-of
+  "Takes an attribute (either a single key or a vector of keys) and an
+  arbitrary number of validators and returns a function that, when
+  given a map, will validate the map using all the supplied
+  validators, accumulating any errors into a single errors map.
+
+  Example:
+
+  (require '[validateur.validation :refer :all])
+
+  (vr/validity-of :person
+    (vr/presence-of :name)
+    (vr/format-of :name :format #\"\\p{Alpha}+\")
+    (vr/inclusion-of :status :in #{:active :inactive}))"
+  [attr validator & validators]
+  (let [get-fn (if (vector? attr) get-in get)]
+    (fn [m]
+      (let [nested (get-fn m attr)]
+        (reduce (fn [[accu-ok accu-errors] f]
+                  (let [[ok errors] (f nested)]
+                    [(and accu-ok ok)
+                     (merge-with cs/union accu-errors (nest attr errors))]))
+          [true {}]
+          validators)))))
+
 
 
 (defn validation-set
