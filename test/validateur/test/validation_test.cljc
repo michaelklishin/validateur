@@ -760,7 +760,6 @@
   (let [v (vr/validation-set
             (vr/presence-of :person)
             (vr/validity-of :person
-              (vr/presence-of :name)
               (vr/format-of :name :format #"[A-Za-zł]+")
               (vr/inclusion-of :status :in #{:active :inactive})))]
     (is (= {:person #{"can't be blank"}
@@ -781,7 +780,6 @@
   (let [v (vr/validation-set
             (vr/presence-of :person)
             (vr/validity-of :person
-              (vr/presence-of :name)
               (vr/format-of :name :format #"[A-Za-zł]+")
               (vr/inclusion-of :status :in #{:active :inactive})))]
     (is (= {} (v {:person {:name "Michał" :status :active}})))))
