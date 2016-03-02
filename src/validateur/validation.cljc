@@ -565,7 +565,7 @@
     (vr/presence-of :name)
     (vr/format-of :name :format #\"\\p{Alpha}+\")
     (vr/inclusion-of :status :in #{:active :inactive}))"
-  [attr validator & validators]
+  [attr & validators]
   (let [get-fn (if (vector? attr) get-in get)]
     (fn [m]
       (let [nested (get-fn m attr)]
