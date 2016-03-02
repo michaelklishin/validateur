@@ -461,7 +461,6 @@
           [true {}]
           [false {attr #{message}}])))))
 
-
 (defn nest
   "Takes an attribute (either a single key or a vector of keys) and a
      validation set and prefixes the keys in the validation set's
@@ -497,6 +496,39 @@
            [(subvec k attrcount (count k)) messages])
          (into {}))))
 
+(defn validate-nested
+  "Returns a function that, when given a map, will validate that the
+  value of at key attr in that map passes validation using the given
+  validator (a function as returned by validation-set).
+
+  Accepted options:
+
+  :message (default: \"is invalid\"): an error message for invalid values
+  :message-fn (default:nil): function to retrieve message with signature (fn [map])
+
+  Example:
+
+  (require '[validateur.validation :refer :all])
+
+  (def foo-validator (validation-set (presence-of :foo)))
+
+  (validation-set (validate-nested :bar foo-validator))"
+  [attr validator & {:keys [message message-fn]}]
+  (let [get-fn (if (vector? attr) get-in get)
+        validate-fn (if (or message message-fn)
+                      (let [msg-fn (or message-fn (constantly message))]
+                        (fn [m]
+                          (reduce-kv (fn [out k v]
+                                       (assoc out k #{(msg-fn m)}))
+                            {}
+                            (validator m))))
+                      validator)]
+    (fn [m]
+      (let [value (get-fn m attr)
+            result (validate-fn value)]
+        (if (seq result)
+          [false (nest attr result)]
+          [true {}])))))
 
 (defn validate-with-predicate
   "Returns a function that, when given a map, will validate that the predicate returns

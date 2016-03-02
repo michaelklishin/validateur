@@ -786,6 +786,67 @@
               (vr/inclusion-of :status :in #{:active :inactive})))]
     (is (= {} (v {:person {:name "Michał" :status :active}})))))
 
+;;
+;; validate-nested
+;;
+
+(deftest test-validate-nested-validation-fails
+  (let [person-v (vr/validation-set
+                   (vr/presence-of :name)
+                   (vr/format-of :name :format #"[A-Za-z]+"))
+        v (vr/validate-nested :person person-v)]
+    (is (= [false {[:person :name] #{"can't be blank"}}]
+           (v {})))
+    (is (= [false {[:person :name] #{"can't be blank"}}]
+           (v {:person {}})))
+    (is (= [false {[:person :name] #{"can't be blank"}}]
+           (v {:person {:name nil}})))
+    (is (= [false {[:person :name] #{"can't be blank"}}]
+           (v {:person {:name ""}})))
+    (is (= [false {[:person :name] #{"has incorrect format"}}]
+           (v {:person {:name "123"}})))))
+
+(deftest test-validate-nested-validation-succeeds
+  (let [person-v (vr/validation-set
+                   (vr/presence-of :name)
+                   (vr/format-of :name :format #"[A-Za-z]+"))
+        v (vr/validate-nested :person person-v)]
+    (is (= [true {}]
+           (v {:person {:name "Michał"}})))))
+
+(deftest test-validate-nested-validation-fails-with-custom-message
+  (let [person-v (vr/validation-set
+                   (vr/presence-of :name)
+                   (vr/format-of :name :format #"[A-Za-z]+"))
+        v (vr/validate-nested :person person-v :message "test")]
+    (is (= [false {[:person :name] #{"test"}}]
+           (v {})))
+    (is (= [false {[:person :name] #{"test"}}]
+           (v {:person {}})))
+    (is (= [false {[:person :name] #{"test"}}]
+           (v {:person {:name nil}})))
+    (is (= [false {[:person :name] #{"test"}}]
+           (v {:person {:name ""}})))
+    (is (= [false {[:person :name] #{"test"}}]
+           (v {:person {:name "123"}})))))
+
+(deftest test-validate-nested-validation-fails-with-custom-message-fn
+  (let [person-v (vr/validation-set
+                   (vr/presence-of :name)
+                   (vr/format-of :name :format #"[A-Za-z]+"))
+        v (vr/validate-nested :person person-v
+            :message-fn (fn [m]
+                          (str "test" (+ (count m) (count (:person m))))))]
+    (is (= [false {[:person :name] #{"test0"}}]
+           (v {})))
+    (is (= [false {[:person :name] #{"test0"}}]
+           (v {:person {}})))
+    (is (= [false {[:person :name] #{"test1"}}]
+           (v {:person {:name nil}})))
+    (is (= [false {[:person :name] #{"test1"}}]
+           (v {:person {:name ""}})))
+    (is (= [false {[:person :name] #{"test1"}}]
+           (v {:person {:name "123"}})))))
 
 ;;
 ;; Error Reporting
