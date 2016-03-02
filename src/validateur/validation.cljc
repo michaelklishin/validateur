@@ -41,26 +41,32 @@
 
 (defn ^{:private true} not-allowed-to-be-blank?
   [v ^Boolean allow-nil ^Boolean allow-blank]
-  (or (and (nil? v)                  (not allow-nil))
-      (and (not (nil? v)) (clojure.string/blank? v) (not allow-blank))))
+  (or (and (not allow-nil)
+           (nil? v))
+      (and (not allow-blank)
+           (not (nil? v))
+           (string? v)
+           (clojure.string/blank? v))))
 
 (defn ^{:private true} allowed-to-be-blank?
   [v ^Boolean allow-nil ^Boolean allow-blank]
-  (or (and (nil? v)                  allow-nil)
-      (and (not (nil? v)) (clojure.string/blank? v) allow-blank)))
+  (or (and allow-nil
+           (nil? v))
+      (and allow-blank
+           (not (nil? v))
+           (string? v)
+           (clojure.string/blank? v))))
 
 
 (defn ^{:private true} equal-length-of
-  [m attribute actual expected-length allow-nil allow-blank message-fn]
-  (if (or (= expected-length (count actual))
-          (allowed-to-be-blank? actual allow-nil allow-blank))
+  [m attribute actual expected-length message-fn]
+  (if (= expected-length (count actual))
     [true {}]
     [false {attribute #{(message-fn :length:is m attribute expected-length)}}]))
 
 (defn ^{:private true} range-length-of
-  [m attribute actual xs allow-nil allow-blank message-fn]
-  (if (or (member? xs (count actual))
-          (allowed-to-be-blank? actual allow-nil allow-blank))
+  [m attribute actual xs message-fn]
+  (if (member? xs (count actual))
     [true {}]
     [false {attribute #{(message-fn :length:within m attribute xs)}}]))
 
@@ -406,16 +412,32 @@
                      blank-message "can't be blank"}}]
   (let [f (if (vector? attribute) get-in get)
         msg-fn-blank #(if message-fn (message-fn :blank % attribute) blank-message)
-        msg-fn-is (or message-fn #(str "must be " %4 " characters long"))
-        msg-fn-within (or message-fn #(str "must be from " (first %4) " to "
-                                           (last %4) " characters long"))]
+        msg-fn-is (or message-fn #(if (string? (f %2 attribute))
+                                    (str "must be " %4 " characters long")
+                                    (str "must be " %4 " items long")))
+        msg-fn-within (or message-fn #(if (string? (f %2 attribute))
+                                        (str "must be from " (first %4) " to "
+                                             (last %4) " characters long")
+                                        (str "must be from " (first %4) " to "
+                                             (last %4) " items long")))]
     (fn [m]
       (let [v (f m attribute)]
-        (if (not-allowed-to-be-blank? v allow-nil allow-blank)
-          [false {attribute #{(msg-fn-blank m)}}]
-          (if within
-            (range-length-of m attribute v within allow-nil allow-blank msg-fn-within)
-            (equal-length-of m attribute v is     allow-nil allow-blank msg-fn-is)))))))
+        (cond
+          (nil? v)
+          (if allow-nil
+            [true {}]
+            [false {attribute #{(msg-fn-blank m)}}])
+
+          (and (string? v) (clojure.string/blank? v))
+          (if allow-blank
+            [true {}]
+            [false {attribute #{(msg-fn-blank m)}}])
+
+          within
+          (range-length-of m attribute v within msg-fn-within)
+
+          :else
+          (equal-length-of m attribute v is     msg-fn-is))))))
 
 
 
