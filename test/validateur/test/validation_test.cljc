@@ -587,6 +587,26 @@
     (is (= [false {:title #{[:length:within {:title "trance"} :title [(range 9 13)]]}}]
            (v {:title "trance"})))))
 
+(deftest test-length-validator-with-fixed-length-and-non-string-input
+  (let [v (vr/length-of :items :is 3)]
+    (is (fn? v))
+    (is (= [true {}]                                  (v {:items [1 2 3]})))
+    (is (= [true {}]                                  (v {:items #{1 2 3}})))
+    (is (= [false {:items #{"must be 3 items long"}}] (v {:items [1 2]})))
+    (is (= [false {:items #{"must be 3 items long"}}] (v {:items #{1 2}})))))
+
+(deftest test-length-validator-with-range-length-and-non-string-input
+  (let [v (vr/length-of :items :within (range 3 7))]
+    (is (fn? v))
+    (is (= [true {}]                                            (v {:items [1 2 3]})))
+    (is (= [true {}]                                            (v {:items [1 2 3 4 5 6]})))
+    (is (= [true {}]                                            (v {:items #{1 2 3}})))
+    (is (= [true {}]                                            (v {:items #{1 2 3 4 5 6}})))
+    (is (= [false {:items #{"must be from 3 to 6 items long"}}] (v {:items [1 2]})))
+    (is (= [false {:items #{"must be from 3 to 6 items long"}}] (v {:items [1 2 3 4 5 6 7]})))
+    (is (= [false {:items #{"must be from 3 to 6 items long"}}] (v {:items #{1 2}})))
+    (is (= [false {:items #{"must be from 3 to 6 items long"}}] (v {:items #{1 2 3 4 5 6 7}})))))
+
 ;;
 ;; format-of
 ;;
