@@ -369,7 +369,7 @@
         (if (not-allowed-to-be-blank? v allow-nil allow-blank)
           [false {attribute #{(msg-fn :blank m)}}]
           (if (or (allowed-to-be-blank? v allow-nil allow-blank)
-                  (re-find format v))
+                  (re-matches format v))
             [true {}]
             [false {attribute #{(msg-fn :format m)}}]))))))
 
