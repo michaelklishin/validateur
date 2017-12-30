@@ -7,7 +7,6 @@
   :jar-exclusions [#"\.swp|\.swo|\.DS_Store"]
   :profiles {:1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
-             :master {:dependencies [[org.clojure/clojure "1.10.0-master-SNAPSHOT"]]}
              :cljs {:hooks [leiningen.cljsbuild]}
              :dev {:dependencies [[org.clojure/clojurescript "1.9.946"]]
                    :plugins [[lein-codox "0.10.0"]
@@ -20,7 +19,7 @@
                                                     :source-map "target/testable.js.map"
                                                     :optimizations :advanced}}]}
                    :codox {:source-paths ["src"]}}}
-  :aliases  {"all" ["with-profile" "+dev:dev,1.7:dev,1.9:dev,master:dev,cljs"]}
+  :aliases  {"all" ["with-profile" "+dev:dev,1.7:dev,1.9:dev,cljs"]}
   :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
                              :releases {:checksum :fail :update :always}}
