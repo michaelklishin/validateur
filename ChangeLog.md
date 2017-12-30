@@ -1,3 +1,26 @@
+## Changes Between 2.6.0 and 2.7.0 (unreleased)
+
+No changes yet.
+
+
+
+## Changes Between 2.5.0 and 2.6.0 (Dec 30th, 2017)
+
+### format-of Matcher Fixed
+
+The `format-of` matcher now correctly matches inputs against the regular
+expression.
+
+GitHub issue: [#53](https://github.com/michaelklishin/validateur/pull/53).
+
+### Clojure 1.8 by Default
+
+The project now depends on `org.clojure/clojure` version `1.8.0`. It is
+still compatible with Clojure 1.7 and if your `project.clj` depends on
+a different version, it will be used, but 1.8 is the default now.
+
+
+
 ## Changes Between 2.4.0 and 2.5.0
 
 ### Clojure 1.7 by Default

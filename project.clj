@@ -1,4 +1,4 @@
-(defproject com.novemberain/validateur "2.6.0"
+(defproject com.novemberain/validateur "2.7.0-SNAPSHOT"
   :description "Functional validations inspired by Ruby's ActiveModel"
   :license { :name "Eclipse Public License" }
   :url "http://clojurevalidations.info"
