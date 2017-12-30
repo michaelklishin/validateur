@@ -1,4 +1,5 @@
 language: clojure
+before_script: lein cljsbuild once
 script: lein all test
 jdk:
   - oraclejdk8
