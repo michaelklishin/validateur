@@ -810,7 +810,7 @@
                    (vr/format-of :name :format #"[A-Za-z]+"))
         v (vr/validate-nested :person person-v)]
     (is (= [true {}]
-           (v {:person {:name "Michał"}})))))
+           (v {:person {:name "Michal"}})))))
 
 (deftest test-validate-nested-validation-fails-with-custom-message
   (let [person-v (vr/validation-set
