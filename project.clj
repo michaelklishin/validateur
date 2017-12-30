@@ -3,14 +3,15 @@
   :license { :name "Eclipse Public License" }
   :url "http://clojurevalidations.info"
   :min-lein-version "2.5.1"
-  :dependencies [[org.clojure/clojure  "1.7.0"]]
+  :dependencies [[org.clojure/clojure  "1.8.0"]]
   :jar-exclusions [#"\.swp|\.swo|\.DS_Store"]
-  :profiles {:1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}
-             :master {:dependencies [[org.clojure/clojure "1.9.0-master-SNAPSHOT"]]}
+  :profiles {:1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
+             :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
+             :master {:dependencies [[org.clojure/clojure "1.10.0-master-SNAPSHOT"]]}
              :cljs {:hooks [leiningen.cljsbuild]}
-             :dev {:dependencies [[org.clojure/clojurescript "1.7.228"]]
-                   :plugins [[lein-codox "0.9.0"]
-                             [lein-cljsbuild "1.1.2"]]
+             :dev {:dependencies [[org.clojure/clojurescript "1.9.946"]]
+                   :plugins [[lein-codox "0.10.0"]
+                             [lein-cljsbuild "1.1.7" :exclusions [org.clojure/clojure]]]
                    :cljsbuild {:test-commands {"phantom" ["phantomjs" "target/testable.js"]}
                                :builds [{:source-paths ["src" "test"]
                                          :compiler {:output-to "target/testable.js"
@@ -19,7 +20,7 @@
                                                     :source-map "target/testable.js.map"
                                                     :optimizations :advanced}}]}
                    :codox {:source-paths ["src"]}}}
-  :aliases  {"all" ["with-profile" "+dev:dev,1.8:dev,master:dev,cljs"]}
+  :aliases  {"all" ["with-profile" "+dev:dev,1.7:dev,1.9:dev,master:dev,cljs"]}
   :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
                              :releases {:checksum :fail :update :always}}
