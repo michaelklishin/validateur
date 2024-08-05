@@ -3,9 +3,9 @@
   :license { :name "Eclipse Public License" }
   :url "http://clojurevalidations.info"
   :min-lein-version "2.5.1"
-  :dependencies [[org.clojure/clojure  "1.8.0"]]
+  :dependencies [[org.clojure/clojure  "1.11.4"]]
   :jar-exclusions [#"\.swp|\.swo|\.DS_Store"]
-  :profiles {:1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
+  :profiles {:1.10 {:dependencies [[org.clojure/clojure "1.10.2"]]}
              :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
              :cljs {:hooks [leiningen.cljsbuild]}
              :dev {:dependencies [[org.clojure/clojurescript "1.9.946"]]
