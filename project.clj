@@ -3,12 +3,12 @@
   :license { :name "Eclipse Public License" }
   :url "http://clojurevalidations.info"
   :min-lein-version "2.5.1"
-  :dependencies [[org.clojure/clojure  "1.11.4"]]
+  :dependencies [[org.clojure/clojure  "1.12.0"]]
   :jar-exclusions [#"\.swp|\.swo|\.DS_Store"]
   :profiles {:1.10 {:dependencies [[org.clojure/clojure "1.10.2"]]}
-             :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
+             :1.11 {:dependencies [[org.clojure/clojure "1.11.4"]]}
              :cljs {:hooks [leiningen.cljsbuild]}
-             :dev {:dependencies [[org.clojure/clojurescript "1.9.946"]]
+             :dev {:dependencies [[org.clojure/clojurescript "1.11.132"]]
                    :plugins [[lein-codox "0.10.0"]
                              [lein-cljsbuild "1.1.7" :exclusions [org.clojure/clojure]]]
                    :cljsbuild {:test-commands {"phantom" ["phantomjs" "target/testable.js"]}
@@ -19,7 +19,7 @@
                                                     :source-map "target/testable.js.map"
                                                     :optimizations :advanced}}]}
                    :codox {:source-paths ["src"]}}}
-  :aliases  {"all" ["with-profile" "+dev:dev,1.7:dev,1.9:dev,cljs"]}
+  :aliases  {"all" ["with-profile" "+dev:dev,1.10:dev,1.11:dev,cljs"]}
   :repositories {"sonatype" {:url "http://oss.sonatype.org/content/repositories/releases"
                              :snapshots false
                              :releases {:checksum :fail :update :always}}
