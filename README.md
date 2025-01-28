@@ -63,7 +63,7 @@ tests pass, submit a pull request on Github.
 
 ## License
 
-Copyright (C) 2011-2018 Michael S. Klishin, Alex Petrov, the ClojureWerkz team,
+Copyright (C) 2011-2025 Michael S. Klishin, Alex Petrov, the ClojureWerkz team,
 and [contributors](https://github.com/michaelklishin/validateur/graphs/contributors).
 
 Distributed under the Eclipse Public License, the same as Clojure.
