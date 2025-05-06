@@ -1,6 +1,6 @@
 # Validateur, a Clojure(Script) Validation Library
 
-Validateur is a [Clojure(Script) validation library](http://clojurevalidations.info) inspired by Ruby's ActiveModel. Validateur is functional: validators are
+Validateur is a Clojure(Script) validation library inspired by Ruby's ActiveModel. Validateur is functional: validators are
 functions, validation sets are higher-order functions, validation results are returned as values.
 
 
@@ -40,7 +40,7 @@ With Maven:
 
 ## Documentation & Examples
 
-Please refer to the [documentation guides](http://clojurevalidations.info) for Validateur.
+Please refer to the [Getting Started guide](./guides/getting_started.md) for Validateur.
 
 Our test suite has usage examples for each validator, built-in validation functions have docstrings.
 
