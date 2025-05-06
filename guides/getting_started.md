@@ -1,7 +1,4 @@
----
-title: "Getting Started with Validateur, a Clojure validations library"
-layout: article
----
+# Getting Started with Validateur, a Clojure validations library
 
 ## About this guide
 
