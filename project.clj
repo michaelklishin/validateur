@@ -1,7 +1,7 @@
 (defproject com.novemberain/validateur "2.7.0-SNAPSHOT"
   :description "Functional validations inspired by Ruby's ActiveModel"
   :license { :name "Eclipse Public License" }
-  :url "http://clojurevalidations.info"
+  :url "https://github.com/michaelklishin/validateur"
   :min-lein-version "2.5.1"
   :dependencies [[org.clojure/clojure  "1.12.0"]]
   :jar-exclusions [#"\.swp|\.swo|\.DS_Store"]
